@@ -1,0 +1,9 @@
+asgiref==3.2.10
+Django==3.0.9
+sqlparse==0.2.4
+channels==3.0.4
+django-environ==0.8.1
+python-dateutil
+Pillow
+channels_redis
+daphne

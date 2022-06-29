@@ -28,7 +28,7 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -85,9 +85,10 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [('redis', 6379)],
         },
     },
+    # "ROUTING": "teamGS.routing.channel_routing"
 }
 WSGI_APPLICATION = 'teamGS.wsgi.application'
 

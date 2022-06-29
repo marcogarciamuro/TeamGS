@@ -42,7 +42,7 @@
 
                 const chatSocket = new WebSocket(
                     'ws://'
-                    + window.location.host
+                    + window.location.hostname + ":8001"
                     + '/ws/soccer/chat/'
                     + roomName
                     + '/'

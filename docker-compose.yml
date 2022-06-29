@@ -1,0 +1,26 @@
+services:
+  redis:
+    image: redis:5
+    container_name: redis
+    restart: always
+    ports: 
+      - "6379:6379"
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: us.gcr.io/teamgs/teamgs_web:latest
+    command: python manage.py runserver 0.0.0.0:80
+    ports:
+      - "8000:80"
+    depends_on: 
+      - redis
+  channels:
+    build: 
+      context: .
+      dockerfile: Dockerfile-channels
+    image: us.gcr.io/teamgs/teamgs_channels:latest
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
