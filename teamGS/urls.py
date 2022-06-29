@@ -19,9 +19,18 @@ from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from core import views as core_views
 from soccer import views as soccer_views
-
 from nba import views as nba_views
+from django.contrib.staticfiles.views import serve
+
+def return_static(request, path, insecure=True, **kwargs):
+    return serve(request, path, insecure, **kwargs)
+
+
+# Solution to serving static files using daphne and not using manage.py runserver
+# https://pythonmana.com/2022/01/202201110420226037.html
+
 urlpatterns = [
+    re_path(r'^static/(?P<path>.*)$', return_static, name='static'),
     path('admin/', admin.site.urls),
     path('', core_views.index),
     path('login/', core_views.user_login),
