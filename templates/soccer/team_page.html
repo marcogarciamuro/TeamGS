@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include "bootstrap.html" %} {% load static %}
+    <meta charset="utf-8">
+    <script type="module" src="https://widgets.api-sports.io/football/1.1.8/widget.js">
+    </script>
+    <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
+    <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
+    <title>{{ team_name }}</title>
+    <!-- Solution to get iframe to fit all of page content without scrolling: https://forum.bubble.io/t/display-full-page-width-and-height-and-without-a-scroll-bar/5658 -->
+    <!-- <script language="javascript">
+            function autoResizeDiv() {
+                document.getElementById('full-screen-me').style.height = window.innerHeight + 'px';
+            }
+            window.onresize = autoResizeDiv;
+            autoResizeDiv();
+        </script>
+        <style type="text/css">
+            body {
+                overflow: hidden;
+            }
+        </style> -->
+</head>
+
+<body>
+    {% include "navigation.html" %}
+    <div class="container">
+        <div class="container mt-3">
+            <form method="POST" action="/soccer/team-page/">
+                {% csrf_token %}
+                <div style="display: flex; justify-content: flex-end">
+                    {{ search_form }}
+                    <button type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                </div>
+            </form>
+            <span>
+                    <h1>
+                        <form method = "POST" action="/soccer/team-page/toggle-like/{{ team_name_formatted }}/"/>
+                        <!-- <a href="soccer/team-page/{{ team_name }}"> -->
+                        <!-- <a href="/soccer/team-page/toggle-like/{{ team_id }}"> -->
+                            {% csrf_token %}
+                            {{ team_name }}
+                            {% if team_is_liked == True %}
+                                <button id="star" title="Unlike Team" type="submit" class="fa-solid fa-star"></button>
+                            {% elif team_is_liked == False %}
+                                <button id="star" title="Like Team" type="submit" class="fa-regular fa-star"></button>
+                            {% endif %}
+                        </form>
+                    </h1>
+                </span>
+            <h3><a href="/soccer/chat/{{ team_name_formatted }}" class="removeLinkUnderline"> Chat Room <i class="fa-solid fa-comments"></i></a></h3>
+        </div>
+        <table cellpadding="10" class="top">
+            <tr>
+                <td>
+                    <h2>Previous Games:</h2>
+                    <div 
+                        id="wg-api-football-fixtures" 
+                        data-host="api-football-v1.p.rapidapi.com" 
+                        data-refresh="0" 
+                        data-date="" 
+                        data-league="" 
+                        data-team="{{ team_id }}" 
+                        data-season="" 
+                        data-last="5" 
+                        data-next="" 
+                        data-key="{% get_env_var 'SOCCER_API_KEY' %}"
+                        data-theme="" 
+                        data-show-errors="true" 
+                        class="api_football_loader">
+                    </div>
+                </td>
+                <td rowspan="3" width="50%">
+                    {% for article in articles %}
+                    <ul>
+                        <h4>{{ article.title }}</h4>
+                        <img src={{ article.thumbnail }} width="50%" height="50%"></img>
+                        <p class="description">{{ article.description }} </p>
+                        <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer" class="description">Go to article</a>
+                    </ul>
+                    <br> {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <iframe id="full-screen-me" style="position:relative; border:0; height:100%; width:100%" height="100%" width="100%" src="/soccer/upcoming-matches/{{ team_id }}"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h2>League Standings</h2>
+                    <div 
+                        id="wg-api-football-standings" 
+                        class="widget" 
+                        data-host="api-football-v1.p.rapidapi.com" 
+                        data-league="{{ league_id }}" 
+                        data-team="" 
+                        data-season="{{ cur_season }}" 
+                        data-key="{% get_env_var 'SOCCER_API_KEY' %}"
+                        data-theme="" 
+                        data-show-errors="true"
+                        class="api_football_loader">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
