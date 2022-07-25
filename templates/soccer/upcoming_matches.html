@@ -3,13 +3,13 @@
     <head>
         {% include "bootstrap.html" %}
         {% load static %}
+        {% load extras %}
         <meta charset = "utf-8">
         <link rel="stylesheet" href="{% static 'teamGS.css' %}"/>
         <title>
         </title>
     </head>
     <body class="full">
-        <h2>Upcoming Matches:</h2>
         <div id="wg-api-football-fixtures"
             data-host="api-football-v1.p.rapidapi.com"
             data-refresh="0"

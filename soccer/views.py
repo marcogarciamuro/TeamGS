@@ -289,7 +289,6 @@ def get_articles_fromAPI(search_term, num_articles):
         return []
     article_list = []
     for article in article_results:
-        print(article)
         title = article["title"]
         author = article["author"]
         if author is None:
@@ -325,9 +324,7 @@ def get_articles_fromAPI(search_term, num_articles):
             description = article["description"]
             thumbnail = article["thumbnail"]
             url = article["url"]
-            print(description)
             description = re.sub('<[^<]+?>', '', description)
-            print(description)
             article = {
                 "title": title,
                 "author": author,

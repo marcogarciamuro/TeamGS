@@ -19,14 +19,21 @@
     {% now "SHORT_DATETIME_FORMAT" as message_date_time %}
     <div class = "container">
         <div class="container mt-3">
+            <div style="display: flex; justify-content: flex-end">
+                <a href="/nba/team-page/{{ room_name }}">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Team Page
+                </a>
+            </div>
             <h1>{{ room_name | replace }}</h1>
             <h5>Chat Log</h5>
-            <textarea id="chat-log" disabled cols="70" rows="10"></textarea><br>
+            <textarea id="chat-log" disabled cols="100" rows="20"></textarea><br>
             <br>
-            <input id="chat-message-input" type="text" placeholder="Enter a message" size="70"><br>
+            <input id="chat-message-input" type="text" placeholder="Enter a message" size="100"><br>
             <input id="chat-message-submit" type="button" value="Send">
             {{ room_name|json_script:"room-name" }}
-            {{ request.user.username|json_script:"username" }}
+            {% get_username request.user.username as username %}
+            {{ username|json_script:"username" }}
             <script>
                 const username = JSON.parse(document.getElementById('username').textContent);
                 const roomName = JSON.parse(document.getElementById('room-name').textContent);

@@ -11,6 +11,10 @@
     font-size: 25px;
 }
 
+#id_team_query {
+    width: 30%;
+}
+
 .center {
     display: flex;
     justify-content: center;
@@ -69,7 +73,7 @@ html.index,
 body.index {
     height: 100%;
     margin: auto auto 0;
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .bg {
@@ -140,3 +144,20 @@ a.description {
     padding-left:30px;
     padding-right:30px;
   } */
+
+.min-100 {
+    min-height: 100%;
+}
+
+html, body {
+    height: 100%;
+}
+
+.indexPic {
+    width: auto;
+    height: auto;
+    min-width: 208px;
+    min-height: 108px;
+    max-width: 75%;
+    max-height: 75%;
+}
