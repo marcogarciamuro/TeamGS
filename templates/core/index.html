@@ -1,31 +1,34 @@
 <!DOCTYPE html>
-<html lang="en" class="index">
-    <head>
-        {% include "bootstrap.html" %}
-        {% load static %}
-        <meta charset="utf-8">
-        <title>Homepage</title>
-        <link rel="stylesheet" href="{% static 'teamGS.css' %}"/>
-    </head>
-    <body class="index">
-        {% include "navigation.html" %}
-        <div class="bg"></div>
-            <h1 class="centered">
-                <strong>
-                Delivering 
-                <br>
-                everything about 
-                <br>
-                the sports teams
-                <br>
-                you love.
-                </strong>
-                <br>
-                <p class="subtitle">
-                    <strong>
-                        Free. Simple. Informative.
-                    </strong>
-                </p>
-            </h1>
-    </body>
+<!-- <html lang="en" class="index"> -->
+<html lang="en">
+
+<head>
+    {% include "bootstrap.html" %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
+    <title>Homepage</title>
+
+<body 
+        class="bg-image"
+        style="
+            background-image: url('/static/background.png');
+            height: 100%;
+        ">
+        <div class="min-vw-100 min-100 d-flex flex-column">
+            {% include "navigation.html" %}
+            <div class="row flex-grow-1 d-flex align-items-center justify-content-center">
+                <main class="col-xs-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 ps-5 pe-5 offset-lg-2 offset-xl-2">
+                    <h1>Providing everything about the sports teams you love.</h1>
+                    <strong>Free. Simple. Informative.</strong>
+                </main>
+                <div class="col ps-5 pe-5 align-self-end">
+                    <img class="indexPic d-block m-auto" src="/static/ronaldoLebron.png">
+                </div>
+            </div>
+        </div>
+</body>
+
 </html>

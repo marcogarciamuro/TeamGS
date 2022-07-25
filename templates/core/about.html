@@ -1,74 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        {% include "bootstrap.html" %}
-        {% load static %}
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="{%static 'teamGS.css' %}" />
-        <title>About</title>
-    </head>
-    <body>
+<head>
+    {% include "bootstrap.html" %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static 'teamGS.css' %}" />
+    <title>About</title>
+</head>
+<body>
         {% include "navigation.html" %}
         <br>
         <div class="container">
-        <table>
-            <tr>
-            <td>
-                <div class="container">
-                    <img src="{% static 'goatsCropped.jpg' %}" height="100%" width="100%">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="container">
+                        <img src="{% static 'goatsCropped.jpg' %}" height="100%" width="100%">
+                    </div>
                 </div>
-            </td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>
-            <div class="container">
-                <h1 class="text-center">What is TeamGS?</h1>
-                <!-- <p class="aboutText"> Creator: Marco Garcia Muro</p>
-                <p>I am a college senior pursuing my Bachelor's in 
-                    Computer Science. Building this website has been
-                    a lot of work but it has been a fun and rewarding
-                    process as well. 
-                </p>
-                <p class="aboutText">
-                    If you have any suggestions, questions, or comments
-                    Feel free to contact me at __________.
-                </p> -->
-                <p class="aboutText">
-                    Team GS, short for Team Gumshoe, is a website
-                    that provides a central space where you can:
-                    <ul>
-                        <li>Follow the teams that you support</li>
-                        <li>View a team's scheduled/previous games</li>
-                        <li>Check a team's rank in their respective league or conference</li>
-                        <li>Read what the world of sports is saying about a team in news articles</li>
-                        <li>Talk to fellow fans about a team</li>
-                    </ul>
-                </p>
-                <p class="aboutText">
-                    The data and information that this website displays
-                    was retreived using the APIs: API-Football, API-NBA, and
-                    NewsAPI. 
-                </p>
-                <p class="aboutText">The drive for creating this website was my strong passion
-                    for sports. 
-                    I am a huge fan of soccer and basketball and I wanted to create
-                    a service that would inform similar fans about these 
-                    sports and the teams they like. 
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="container">
+                        <h1 class="text-center">What is TeamGS?</h1>
+                        <p class="aboutText">
+                            Team GS, short for Team Gumshoe, is a website
+                            that provides a central space where you can:
+                            <ul>
+                                <li>Follow the teams that you support</li>
+                                <li>View a team's scheduled/previous games</li>
+                                <li>Check a team's rank in their respective league or conference</li>
+                                <li>Read what the world of sports is saying about a team in news articles</li>
+                                <li>Talk to fellow fans about a team</li>
+                            </ul>
+                        </p>
+                        <p class="aboutText">
+                            The data and information that this website displays
+                            was retreived using the APIs: API-Football, API-NBA, and
+                            NewsAPI. 
+                        </p>
+                        <p class="aboutText">The drive for creating this website was my strong passion
+                            for sports. 
+                            I am a huge fan of soccer and basketball and I wanted to create
+                            a service that would inform similar fans about these 
+                            sports and the teams they like. 
 
-                    More specifcally, the creation of this site
-                    came about because of previous inconveniences and
-                    annoyances.
-                    I was constantly Googling when a certain 
-                    team played, and when this other certain team played, 
-                    or if there were any live games I could watch at that
-                    current time. This sparked an idea to create a space
-                    where people could see easily track and view information
-                    about the teams/sports they regularly watch or support.
-                </p>
+                            More specifcally, the creation of this site
+                            came about because of previous inconveniences and
+                            annoyances.
+                            I was constantly Googling when a certain 
+                            team played, and when this other certain team played, 
+                            or if there were any live games I could watch at that
+                            current time. This sparked an idea to create a space
+                            where people could see easily track and view information
+                            about the teams/sports they regularly watch or support.
+                        </p>
+                    </div>
+                </div>
             </div>
-            </td>
-        </table>
         </div>
     </body>
 </html>

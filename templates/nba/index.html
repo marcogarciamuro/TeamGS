@@ -28,28 +28,56 @@
         </div>
         <br> 
         {% if live_games == None %}
-        <table class="top">
-            <tr>
-                <td>
-                    <h2>Live Games:</h1>
-                        <p>No games in progress</p>
-                </td>
-                <td width="50%">
-                    <h2>Popular Articles</h2>
-                    {% for article in articles %}
-                    <ul>
-                        <h3>{{ article.title }}</h3>
-                        <img src={{ article.thumbnail }} width="50%" height="50%"></img>
-                        <p class="description">{{ article.description }} </p>
-                        <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
-                    </ul>
-                    {% endfor %}
-                </td>
-            </tr>
-        </table>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <h2>Live Games</h2>
+                <p>No games in progress</p>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <h2>Popular Articles</h2>
+                {% for article in articles %}
+                <ul>
+                    <h4>{{ article.title }}</h4>
+                    <img src={{ article.thumbnail }} width="50%" height="50%"></img>
+                    <p class="description">{{ article.description }} </p>
+                    <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
+                </ul>
+                {% endfor %}
+            </div>
+        </div>
 
         {% else %}
-        <table class="top">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <h2>Live Games</h2>
+                {% for game in live_games %}
+                    Quarter {{ game.quarter}}:
+                    <div class="spinner-grow spinner-grow-sm text-danger" role="status">
+                        <span class="visually-hidden"></span>
+                    </div>
+                    <a href="/nba/team-page/{{ team.formatted_name }}/"></a>
+                    {{ game.home_team.name }}
+                    <img width="50px" height="50px" src={{ game.home_team.logo }} width="50%" height="50%"></img>
+                    {{ game.home_team_points}}
+                        -
+                    {{ game.away_team_points }}
+                    <img width="50px" height="50px" src={{ game.away_team.logo }} width="50%" height="50%"></img>
+                    {{ game.away_team.name }}
+                {% endfor %}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <h2>Popular Articles</h2>
+                {% for article in articles %}
+                <ul>
+                    <h4>{{ article.title }}</h4>
+                    <img src={{ article.thumbnail }} width="50%" height="50%"></img>
+                    <p class="description">{{ article.description }} </p>
+                    <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
+                </ul>
+                {% endfor %}
+            </div> 
+        </div>
+        <!-- <table class="top">
             <h2>Live Games:</h2>
             {% for game in live_games %}
             <tr>
@@ -100,7 +128,7 @@
                 </td>
             </tr>
             {% endfor %}
-        </table>
+        </table> -->
         {% endif %}
     </div>
 </body>

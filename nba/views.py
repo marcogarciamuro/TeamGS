@@ -28,6 +28,8 @@ cur_date = datetime.date.today()
 cur_datetime = datetime.datetime.now()
 cur_season = str(cur_date.year-1)
 
+
+
 def team_not_found(request):
     return render(request, "nba/team-not-found.html")
 
@@ -423,6 +425,15 @@ def get_articles(team):
         articles = get_articles_from_API(team) # uncomment to get articles from DB
     return articles
 
+# Solution to remove HTML tags from descriptions of NBA articles: 
+# https://stackoverflow.com/questions/9662346/python-code-to-remove-html-tags-from-a-string
+
+CLEANR = re.compile('<.*?>')
+
+def cleanHTML(raw_html):
+    cleanText = re.sub(CLEANR, '', raw_html)
+    return cleanText
+
 def get_articles_from_API(team):
     print("Getting articles from API")
     if type(team) is Team:
@@ -452,7 +463,10 @@ def get_articles_from_API(team):
         if author is None:
             author = ""
         description = article["description"]
-        re.sub('<[^<]+?>', '', description)
+        if description is not None:
+            description = cleanHTML(description)
+        else:
+            description = ""
         thumbnail = article["urlToImage"]
         url = article["url"]
         publishedDate = article["publishedAt"]
