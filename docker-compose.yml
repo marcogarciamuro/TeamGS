@@ -15,7 +15,7 @@ services:
     command: python manage.py runserver 0.0.0.0:80
     restart: always
     ports:
-      - "8000:80"
+      - "80:80"
     depends_on: 
       - redis
 
