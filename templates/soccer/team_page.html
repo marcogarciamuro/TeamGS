@@ -4,8 +4,6 @@
 <head>
     {% include "bootstrap.html" %} {% load static %} {% load extras %}
     <meta charset="utf-8">
-    <script type="module" src="https://widgets.api-sports.io/football/1.1.8/widget.js">
-    </script>
     <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
     <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
     <title>{{ team_name }}</title>
@@ -99,7 +97,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                     <div class="container mt-3 ps-0">
                         <h2>Popular Articles</h2>
                         {% for article in articles %}
@@ -116,5 +114,7 @@
             </div>
         </div>
     </div>
+    <script type="module" src="https://widgets.api-sports.io/football/1.1.8/widget.js">
+    </script>
 </body>
 </html>
