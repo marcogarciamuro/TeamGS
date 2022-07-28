@@ -12,10 +12,9 @@
 
 <body>
     {% include "navigation.html" %}
-    <br>
     <div class="container">
-        <div class="container">
-            <form method="POST" action="/nba/team-page/">
+        <div class="container mt-3">
+            <form method="POST" action="/nba/team-page/" class="mt-3 mb-5">
                 {% csrf_token %}
                 <div style="display:flex; justify-content: flex-end">
                     {{ search_form }}
@@ -27,31 +26,37 @@
                 <i class="fa-solid fa-basketball"></i>
             </h1>
         </div>
-        <br> 
+        <br>
         {% if live_games == None %}
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                <h2>Live Games</h2>
-                <p>No games in progress</p>
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                    <div class="container mb-5 mt-3 ps-0">
+                        <h2>Live Games</h2>
+                        <p>No games in progress</p>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                    <div class="container mt-3 ps-0">
+                        <h2>Popular Articles</h2>
+                        {% for article in articles %}
+                        <ul class="ps-0">
+                            <h5>{{ article.title }}</h5>
+                            <img src={{ article.thumbnail }} width="50%" height="50%"></img>
+                            <p class="description">{{ article.description }} </p>
+                            <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go
+                                to article</a>
+                        </ul>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                <h2>Popular Articles</h2>
-                {% for article in articles %}
-                <ul>
-                    <h4>{{ article.title }}</h4>
-                    <img src={{ article.thumbnail }} width="50%" height="50%"></img>
-                    <p class="description">{{ article.description }} </p>
-                    <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
-                </ul>
-                {% endfor %}
-            </div>
-        </div>
 
-        {% else %}
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                <h2>Live Games</h2>
-                {% for game in live_games %}
+            {% else %}
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                    <h2>Live Games</h2>
+                    {% for game in live_games %}
                     Quarter {{ game.quarter}}:
                     <div class="spinner-grow spinner-grow-sm text-danger" role="status">
                         <span class="visually-hidden"></span>
@@ -60,23 +65,26 @@
                     {{ game.home_team.name }}
                     <img width="50px" height="50px" src={{ game.home_team.logo }} width="50%" height="50%"></img>
                     {{ game.home_team_points}}
-                        -
+                    -
                     {{ game.away_team_points }}
                     <img width="50px" height="50px" src={{ game.away_team.logo }} width="50%" height="50%"></img>
                     {{ game.away_team.name }}
-                {% endfor %}
+                    {% endfor %}
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                    <h2>Popular Articles</h2>
+                    {% for article in articles %}
+                    <ul class="ps-0">
+                        <h5>{{ article.title }}</h5>
+                        <img src={{ article.thumbnail }} width="50%" height="50%"></img>
+                        <p class="description">{{ article.description }} </p>
+                        <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to
+                            article</a>
+                    </ul>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                <h2>Popular Articles</h2>
-                {% for article in articles %}
-                <ul>
-                    <h4>{{ article.title }}</h4>
-                    <img src={{ article.thumbnail }} width="50%" height="50%"></img>
-                    <p class="description">{{ article.description }} </p>
-                    <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
-                </ul>
-                {% endfor %}
-            </div> 
+            {% endif %}
         </div>
         <!-- <table class="top">
             <h2>Live Games:</h2>
@@ -130,7 +138,6 @@
             </tr>
             {% endfor %}
         </table> -->
-        {% endif %}
     </div>
 </body>
 
