@@ -42,14 +42,14 @@
             </form>
             <span>
                 <h1>
-                    <form method = "POST" action="/soccer/team-page/toggle-like/{{ team_name_formatted }}/"/>
+                    <form method = "POST" action="/soccer/team-page/toggle-like/{{ team_name_formatted }}/">
                         {% csrf_token %}
                         {{ team_name }}
-                        {% if team_is_liked == True %}
-                            <button id="star" title="Unlike Team" type="submit" class="fa-solid fa-star"></button>
-                        {% elif team_is_liked == False %}
-                            <button id="star" title="Like Team" type="submit" class="fa-regular fa-star"></button>
-                        {% endif %}
+                        <button id="star" 
+                            title="{% if team_is_liked %} Unlike Team {% else %} Like Team {% endif %}"
+                            type="submit"
+                            class="{% if team_is_liked %} fa-solid fa-star {% else %} fa-regular fa-star {% endif %}"
+                        ></button>
                     </form>
                 </h1>
             </span>
@@ -81,7 +81,7 @@
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="container mb-3 ps-0">
                             <h2>Upcoming Games</h2>
-                            <iframe id="full-screen-me" style="position:relative; border:0; height:100%; width:100%" height="100%" width="100%" src="/soccer/upcoming-matches/{{ team_id }}"></iframe>
+                            <iframe scrolling="no" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" width="100%" height="200" src="/soccer/upcoming-matches/{{ team_id }}"></iframe>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -89,7 +89,6 @@
                             <h2>League Standings</h2>
                             <div 
                                 id="wg-api-football-standings" 
-                                class="widget" 
                                 data-host="api-football-v1.p.rapidapi.com" 
                                 data-league="{{ league_id }}" 
                                 data-team="" 
@@ -108,7 +107,7 @@
                         {% for article in articles %}
                             <ul class="ps-0">
                                 <h5>{{ article.title }}</h5>
-                                <img src={{ article.thumbnail }} width="30%" height="30%"></img>
+                                <img src="{{ article.thumbnail }}" width="30%" height="30%">
                                 <p class="description">{{ article.description }} </p>
                                 <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer" class="description">Go to article</a>
                             </ul>

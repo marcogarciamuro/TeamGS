@@ -52,7 +52,7 @@
                         {% for article in articles %}
                         <ul class="ps-0">
                             <h5>{{ article.title }}</h5>
-                            <img src={{ article.thumbnail }} width="50%" height="50%"></img>
+                            <img src="{{ article.thumbnail }}" width="50%" height="50%">
                             <p class="description">{{ article.description }} </p>
                             <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go
                                 to article</a>
