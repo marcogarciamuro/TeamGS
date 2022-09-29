@@ -18,25 +18,37 @@
     <div class="container">
         <div class="container mt-3">
             <form method="POST" action="/nba/team-page/">
-                {% csrf_token %}
-                <div style="display: flex; justify-content: flex-end">
-                    {{ search_form }}
-                    <button type="submit">
-                        <i class="fa fa-search"></i>
-                    </button>
+                <div class="row justify-content-end">
+                    <div class="col-auto">
+                        <div class="input-group">
+                            {% csrf_token %}
+                            {{ search_form }}
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
             <br>
             <span>
                 <h1>
-                    <form method="POST" action="/nba/team-page/toggle-like/{{ formatted_team_name }}/" />
-                    {% csrf_token %}
-                    {{ team.name }}
-                    {% if team_is_liked == True %}
-                    <button id="star" title="Unlike Team" type="submit" class="fa-solid fa-star"></button>
-                    {% elif team_is_liked == False %}
-                    <button id="star" title="Like Team" type="submit" class="fa-regular fa-star"></button>
-                    {% endif %}
+                    <form method="POST" action="/nba/team-page/toggle-like/{{ formatted_team_name }}/">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-auto">
+                                {{ team.name }}
+                            </div>
+                            <div class="col-auto ps-0">
+                                <button 
+                                    id="star" 
+                                    title="{% if team_is_liked %} Unlike Team {% else %} Like Team {% endif %}" 
+                                    type="submit" 
+                                    class="{% if team_is_liked %} fa-solid fa-star {% else %} fa-regular fa-star {% endif %}"
+                                    >
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </h1>
             </span>
@@ -51,10 +63,10 @@
         <div class="container mt-3">
             <div class="row">
                 <!-- Left Column -->
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                <div class="col-12 col-lg-6">
                     <!-- Previous Games -->
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <div class="container mb-5 ps-0">
+                    <div class="col-12">
+                        <div class="container mb-5 ps-0 pe-0">
                             <h2>Previous Games</h2>
                             {% for game in games.previous_games %}
                             <div class="row">
@@ -62,42 +74,60 @@
                                     {{ game.date }}
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    {% if game.home_team_points > game.away_team_points %}
-                                    <strong>
-                                        <a href="/nba/team-page/{{ game.home_team.name | removeSpaces }}"
-                                            class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                                    </strong>
-                                    {% else %}
-                                    <a href="/nba/team-page/{{ game.home_team.name | removeSpaces }}"
-                                        class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                                    {% endif %}
+                            <div class="row align-items-center">
+                                <div class="col-4 ps-0">
+                                    <div class="row align-items-center justify-content-end">
+                                        <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
+                                            {% if game.home_team_points > game.away_team_points %}
+                                            <strong>
+                                                <a href="/nba/team-page/{{ game.home_team.name | removeSpaces }}" class="removeLinkUnderline">
+                                                    {{ game.home_team.name }}</a>
+                                            </strong>
+                                            {% else %}
+                                            <a href="/nba/team-page/{{ game.home_team.name | removeSpaces }}" class="removeLinkUnderline">
+                                                {{ game.home_team.name }}</a>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
+                                            <img width="50px" height="50px" src="{{ game.home_team.logo }}">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col">
-                                    <img width="50px" height="50px" src={{ game.home_team.logo }}></img>
+                                <div class="col-4 ps-0 pe-0 text-center">
+                                    <div class="row">
+                                        <div class="col-4 ps-0 pe-0">
+                                            <h5 class="text-center text-md-end text-lg-center">
+                                                {{ game.home_team_points }} 
+                                            </h5>
+                                        </div>
+                                        <div class="col-4">
+                                            <h5 class="text-center">
+                                                - 
+                                            </h5>
+                                        </div>
+                                        <div class="col-4 ps-0 pe-0">
+                                            <h5 class="text-center text-md-start text-lg-center">
+                                                {{ game.away_team_points }}
+                                            </h5>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col">
-                                    {{ game.home_team_points }}
-                                </div>
-                                <div class="col">
-                                    -
-                                </div>
-                                <div class="col">
-                                    {{ game.away_team_points }}
-                                </div>
-                                <div class="col">
-                                    <img width="50px" height="50px" src={{ game.away_team.logo }}></img>
-                                </div>
-                                <div class="col">
-                                    {% if game.home_team_points < game.away_team_points %} <strong>
-                                        <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}"
-                                            class="removeLinkUnderline">{{ game.away_team.name }}</a>
-                                        </strong>
-                                        {% else %}
-                                        <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}"
-                                            class="removeLinkUnderline">{{ game.away_team.name }}</a>
-                                        {% endif %}
+                                <div class="col-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
+                                            <img width="50px" height="50px" src="{{ game.away_team.logo }}">
+                                        </div>
+                                        <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
+                                            {% if game.home_team_points < game.away_team_points %} <strong>
+                                                <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}" class="removeLinkUnderline">
+                                                {{ game.away_team.name }}</a>
+                                                </strong>
+                                                {% else %}
+                                                <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}" class="removeLinkUnderline">
+                                                    {{ game.away_team.name }}</a>
+                                                {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <br>
@@ -106,7 +136,7 @@
                     </div>
 
                     <!-- Upcoming Games -->
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-12">
                         <div class="container mb-5 ps-0">
                             <h2>Scheduled Games</h2>
                             {% if games.upcoming_games == None %}
@@ -124,15 +154,15 @@
                                         class="removeLinkUnderline">{{ game.home_team.name }}</a>
                                 </div>
                                 <div class="col">
-                                    <img width="50px" height="50px" src={{ game.home_team.logo }} width="50%"
-                                        height="50%"></img>
+                                    <img src="{{ game.home_team.logo }}" width="50%"
+                                        height="50%">
                                 </div>
                                 <div class="col">
                                     vs.
                                 </div>
                                 <div class="col">
-                                    <img width="50px" height="50px" src={{ game.away_team.logo }} width="50%"
-                                        height="50%"></img>
+                                    <img src="{{ game.away_team.logo }}" width="50%"
+                                        height="50%">
                                 </div>
                                 <div class="col">
                                     <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}"
@@ -144,49 +174,62 @@
                     </div>
 
                     <!-- League Standings -->
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="col-12">
                         <div class="container mb-5 ps-0">
                             <h2>Conference Standings</h2>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th colspan="2">Team</th>
-                                        <th>W</th>
-                                        <th>L</th>
-                                        <th>Pct</th>
-                                    </tr>
-                                </thead>
-                                {% for team in standings %}
-                                <tr class="bigPaddingBetweenCols">
-                                    <td>{{ team.rank }}</td>
-                                    <td>
-                                        <img width="50px" height="50px" src={{ team.logo }} width="50%" height="50%">
-                                    </td>
-                                    <td>
+                            <div class="row">
+                                <div class="col-2 col-md-1 col-lg-2">
+                                    Rank
+                                </div>
+                                <div class="col-4 col-md-5 me-2 me-sm-0 ps-md-3 ps-1 ps-lg-0">
+                                    Team
+                                </div>
+                                <div class="col-1 offset-2 offset-sm-3 offset-lg-2">
+                                    W
+                                </div>
+                                <div class="col-1">
+                                    L
+                                </div>
+                                <div class="col-1">
+                                    Pct
+                                </div>
+                            </div>
+                            {% for team in standings %}
+                                <div class="row pb-2 align-items-center">
+                                    <div class="col-2 col-md-1 col-lg-2 pe-0 text-md-center text-lg-start ps-4 ps-md-1 ps-lg-4">
+                                        {{ team.rank }}
+                                    </div>
+                                    <div class="col-1 col-md-1 ps-0 pe-0 me-2 me-sm-0 ps-md-3 ps-lg-0">
+                                        <img src="{{ team.logo }}" width="50px" height="50px">
+                                    </div>
+                                    <div class="col-5 ps-3">
                                         <a href="/nba/team-page/{{ team.name | removeSpaces }}">
                                             {{ team.name }}
                                         </a>
-                                    </td>
-                                    <td>{{ team.wins }}</td>
-                                    <td>{{ team.losses }}</td>
-                                    <td>{{ team.win_pct }}</td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-
+                                    </div>
+                                    <div class="col-1 offset-sm-1 offset-md-2 offset-lg-1">
+                                        {{ team.wins }}
+                                    </div>
+                                    <div class="col-1">
+                                        {{ team.losses }}
+                                    </div>
+                                    <div class="col-1">
+                                        {{ team.win_pct}}
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
 
                 <!-- Second Column -->
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                <div class="col-12 col-lg-6">
                     <div class="container">
                         <h2>Popular Articles</h2>
                         {% for article in articles %}
                         <ul class="ps-0">
                             <h5>{{ article.title }}</h5>
-                            <img src={{ article.thumbnail }} width="50%" height="50%"></img>
+                            <img src="{{ article.thumbnail }}" width="50%" height="50%">
                             <p>{{ article.description }} </p>
                             <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
                         </ul>
@@ -196,134 +239,6 @@
             </div>
 
         </div>
-
-        <!-- <table class="top">
-            <tr>
-                <td>
-                    <h2>Previous Games:</h2>
-                    <table>
-                        {% for game in games.previous_games %}
-                        <tr>
-                            <td>
-                                {{ game.date }}
-                            </td>
-                        </tr>
-                        <tr class="paddingBetweenCols">
-                            <td>
-                                {% if game.home_team_points > game.away_team_points %}
-                                    <strong>
-                                        <a href="/nba/team-page/{{ game.home_team.name | removeSpaces }}" class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                                    </strong>
-                                {% else %}
-                                    <a href="/nba/team-page/{{ game.home_team.name | removeSpaces }}" class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <img width="50px" height="50px" src={{ game.home_team.logo }}></img>
-                            </td>
-                            <td>
-                                {{ game.home_team_points }}
-                            </td>
-                            <td>
-                                -
-                            </td>
-                            <td>
-                                {{ game.away_team_points }}
-                            </td>
-                            <td>
-                                <img width="50px" height="50px" src={{ game.away_team.logo }}></img>
-                            </td>
-                            <td>
-                                {% if game.home_team_points < game.away_team_points %}
-                                    <strong>
-                                        <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}" class="removeLinkUnderline">{{ game.away_team.name }}</a>
-                                    </strong>
-                                {% else %} 
-                                    <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}" class="removeLinkUnderline">{{ game.away_team.name }}</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </td>
-                <td rowspan="3" width="50%">
-                    {% for article in articles %}
-                    <ul>
-                        <h4>{{ article.title }}</h4>
-                        <img src={{ article.thumbnail }} width="50%" height="50%"></img>
-                        <p>{{ article.description }} </p>
-                        <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
-                    </ul>
-                    {% endfor %}
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <h2>Scheduled Games:</h2>
-                    {% if games.upcoming_games == None %}
-                    <h5>No Immediate Scheduled Games</h5>
-                    {% endif %}
-                    <table>
-                        {% for game in games.upcoming_games %}
-                        <tr>
-                            <td>
-                                {{ game.date }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="/nba/team-page/{{ game.home_team.name | removeSpaces }}" class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                            </td>
-                            <td>
-                                <img width="50px" height="50px" src={{ game.home_team.logo }} width="50%" height="50%"></img>
-                            </td>
-                            <td>
-                                vs.
-                            </td>
-                            <td>
-                                <img width="50px" height="50px" src={{ game.away_team.logo }} width="50%" height="50%"></img>
-                            </td>
-                            <td>
-                                <a href="/nba/team-page/{{ game.away_team.name | removeSpaces }}" class="removeLinkUnderline">{{ game.away_team.name }}</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <h2>Conference Standings</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th colspan="2">Team</th>
-                                <th>W</th>
-                                <th>L</th>
-                                <th>Pct</th>
-                            </tr>
-                        </thead>
-                        {% for team in standings %}
-                        <tr class="bigPaddingBetweenCols">
-                            <td>{{ team.rank }}</td>
-                            <td>
-                                <img width="50px" height="50px" src={{ team.logo }} width="50%" height="50%"></img>
-                            </td>
-                            <td>
-                                <a href="/nba/team-page/{{ team.name | removeSpaces }}">
-                                            {{ team.name }}
-                                        </a>
-                            </td>
-                            <td>{{ team.wins }}</td>
-                            <td>{{ team.losses }}</td>
-                            <td>{{ team.win_pct }}</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </td>
-            </tr>
-        </table> -->
     </div>
 </body>
 

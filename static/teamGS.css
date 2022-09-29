@@ -7,10 +7,6 @@
     font-size: 25px;
 }
 
-#id_team_query {
-    width: 30%;
-}
-
 .center {
     display: flex;
     justify-content: center;
