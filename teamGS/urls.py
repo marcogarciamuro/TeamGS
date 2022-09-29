@@ -29,8 +29,10 @@ urlpatterns = [
     path('join/', core_views.join),
     path('about/', core_views.about),
     path('soccer/team-page/', soccer_views.team_page),
-    re_path('soccer/team-page/(?P<team_name>[a-zA-Z]*-?[a-zA-Z]*)/$', soccer_views.team_page),
-    re_path('soccer/team-page/(?P<team_name>[Pp]aris-[Ss]aint-[Gg]ermain)/$', soccer_views.team_page),
+    re_path(
+        'soccer/team-page/(?P<team_name>[a-zA-Z]*-?[a-zA-Z]*)/$', soccer_views.team_page),
+    re_path(
+        'soccer/team-page/(?P<team_name>[Pp]aris-[Ss]aint-[Gg]ermain)/$', soccer_views.team_page),
     path('soccer/', soccer_views.index),
     path('soccer/team-not-found/', soccer_views.team_not_found),
     path('soccer/upcoming-matches/<int:id>/', soccer_views.upcoming_matches),
@@ -38,7 +40,8 @@ urlpatterns = [
     path('nba/', nba_views.index),
     path('nba/team-page/', nba_views.team_page),
     path('soccer/team-not-found/', nba_views.team_not_found),
-    re_path('nba/team-page/(?P<team_name>[a-zA-Z]*[-?[a-zA-Z]*]*)/$', nba_views.team_page),
+    re_path(
+        'nba/team-page/(?P<team_name>[a-zA-Z]*[-?[a-zA-Z]*]*)/$', nba_views.team_page),
     path('nba/team-page/toggle-like/<str:team_name>/', nba_views.toggleLike),
     path('soccer/liked', soccer_views.liked_list),
     path('soccer/chat/<str:room_name>/', soccer_views.room),
