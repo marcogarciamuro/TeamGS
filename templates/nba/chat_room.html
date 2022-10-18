@@ -1,44 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% include "bootstrap.html" %}
-    {% load static %}
-    {% load extras %}
-    <link rel="stylesheet" href="{% static 'teamGS.css' %}"/>
-    <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
-    <title>Chat Room</title>
-</head>
-<body>
-    {% if request.user.is_anonymous == False %}
-        {% get_liked_soccer_teams request.user.username as liked_soccer_teams %}
-        {% get_liked_nba_teams request.user.username as liked_nba_teams %}
-    {% endif %}
-    {% include "navigation.html" %}
-    {% now "SHORT_DATETIME_FORMAT" as message_date_time %}
-    <div class = "container">
-        <div class="container mt-3">
-            <div style="display: flex; justify-content: flex-end">
-                <a href="/nba/team-page/{{ room_name }}">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Back to Team Page
-                </a>
-            </div>
-            <h1>{{ room_name | replace }}</h1>
-            <h5>Chat Log</h5>
-            <div class="input-group pb-4">
-                <textarea disabled id="chat-log" class="form-control" rows="20"></textarea><br>
-            </div>
-            <div class="input-group pb-4">
-                <input id="chat-message-input" type="text" class="form-control" placeholder="Enter a message">
-                <button class="btn btn-primary" id="chat-message-submit">Send</button>
-            </div>
-            {{ room_name|json_script:"room-name" }}
-            {% get_username request.user.username as username %}
-            {{ username|json_script:"username" }}
-            <script>
+    <head>
+        {% load static %}
+        {% load extras %}
+        {% include "bootstrap.html" %}
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Sports Website" />
+        <meta name="keywords" content="sports, website, soccer, basketball" />
+        <link rel="stylesheet" href="{% static 'teamGS.css' %}"/>
+        <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
+        <title>Chat Room</title>
+    </head>
+    <body>
+        {% if user.is_authenticated %}
+            {% get_liked_soccer_teams user.username as liked_soccer_teams %}
+            {% get_liked_nba_teams user.username as liked_nba_teams %}
+        {% endif %}
+        {% include "navigation.html" %}
+        {% now "SHORT_DATETIME_FORMAT" as message_date_time %}
+        <div class="container">
+            <div class="container mt-3">
+                <div style="display: flex; justify-content: flex-end">
+                    <a href="{% url 'nba-team-page' room_name %}">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Team Page
+                    </a>
+                </div>
+                <h1>{{ room_name | replace }}</h1>
+                <h5>Chat Log</h5>
+                <div class="input-group pb-4">
+                    <textarea disabled id="chat-log" class="form-control" rows="20"></textarea>
+                    <br/>
+                </div>
+                <div class="input-group pb-4">
+                    <input id="chat-message-input"
+                           type="text"
+                           class="form-control"
+                           placeholder="Enter a message"/>
+                    <button class="btn btn-primary" id="chat-message-submit">Send</button>
+                </div>
+                {{ room_name|json_script:"room-name" }}
+                {% get_username request.user.username as username %}
+                {{ username|json_script:"username" }}
+                <script>
                 const username = JSON.parse(document.getElementById('username').textContent);
                 const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
@@ -75,8 +81,8 @@
                     }));
                     messageInputDom.value = '';
                 };
-            </script>
+                </script>
+            </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>

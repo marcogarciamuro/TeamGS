@@ -1,34 +1,35 @@
 from django import forms
 from django.contrib.auth.models import User
-# from core.models import FindTeam
+
 
 class JoinForm(forms.ModelForm):
-    first_name = forms.CharField(widget = forms.TextInput(
-        attrs = {
+    first_name = forms.CharField(widget=forms.TextInput(
+        attrs={
             'placeholder': 'First Name',
         }), label=''
     )
-    last_name = forms.CharField(widget = forms.TextInput(
-        attrs = {
+    last_name = forms.CharField(widget=forms.TextInput(
+        attrs={
             'placeholder': 'Last Name',
         }), label=''
     )
-    username = forms.CharField(widget = forms.TextInput(
-        attrs = {
+    username = forms.CharField(widget=forms.TextInput(
+        attrs={
             'placeholder': 'Username',
         }), label=''
     )
-    password = forms.CharField(widget = forms.PasswordInput(
+    password = forms.CharField(widget=forms.PasswordInput(
         attrs={
             'autocomplete': 'newpassword',
             'placeholder': 'Password'
-            }), label=''
+        }), label=''
     )
-    email = forms.CharField(widget = forms.TextInput(
-        attrs = {
+    email = forms.CharField(widget=forms.TextInput(
+        attrs={
             'placeholder': 'Email',
         }), label=''
     )
+
     class Meta():
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'password')
@@ -36,17 +37,15 @@ class JoinForm(forms.ModelForm):
             'username': None
         }
 
+
 class LoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(
-        attrs = {
+        attrs={
             'placeholder': 'Username',
         }), label=''
     )
-    password = forms.CharField(widget = forms.PasswordInput(
-        attrs = {
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={
             'placeholder': 'Password',
         }), label=''
     )
-
-
-

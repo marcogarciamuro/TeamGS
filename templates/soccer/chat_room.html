@@ -14,20 +14,18 @@
         <title>Chat Room</title>
     </head>
     <body>
-        {% if request.user.is_anonymous == False %}
-            {% get_liked_soccer_teams request.user.username as liked_soccer_teams %}
-            {% get_liked_nba_teams request.user.username as liked_nba_teams %}
+        {% if user.is_authenticated %}
+            {% get_liked_soccer_teams user.username as liked_soccer_teams %}
+            {% get_liked_nba_teams user.username as liked_nba_teams %}
         {% endif %}
         {% include "navigation.html" %}
         {% now "SHORT_DATETIME_FORMAT" as message_date_time %}
         <div class="container">
             <div class="container mt-3">
-                <div style="display: flex; justify-content: flex-end">
-                    <a href="/soccer/team-page/{{ room_name }}">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        Back to Team Page
-                    </a>
-                </div>
+                <a href="{% url 'soccer-team-page' room_name %}" class="float-end">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Team Page
+                </a>
                 <h1>{{ room_name | replace }}</h1>
                 <h5>Chat Log</h5>
                 <br/>

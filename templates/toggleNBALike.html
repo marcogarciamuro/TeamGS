@@ -1,0 +1,71 @@
+<script>
+	$(function(){
+	    var liked = "{{ team_is_liked|yesno:'true,false' }}";
+
+	    // add or remove li element with teamID based on liked var status
+	    function updateNavBar() {
+	        var elementID = 'nba-' + {{ team.teamID }};
+	        var team_name_cleaned = "{{ team.name }}".replace(' ', '-');
+	        var url = "{% url 'nba-team-page' 'name' %}".replace('name', team_name_cleaned);
+	        if(liked) {
+	            if($('#' + elementID).length > 0) {
+	                $("#" + elementID).show()
+	            }
+	            else {
+	                $("#liked-nba-teams").append(
+	                    $('<li/>', {'id': elementID}).append(
+	                        $('<a/>', {
+	                            'class': 'dropdown-item',
+	                            'href': url,
+	                            text: "{{ team.name }}"
+	                        })
+	                    )
+	                )
+	            }
+	        }
+	        else {
+	            $("#" + elementID).hide()
+	        }
+
+	    }
+	    function updateDBLikeStatusSuccess(data) {
+	        if(data.success) {
+	            liked = data.team_is_now_liked;
+	            // Update NavBar (delete/add unliked/liked team)
+	            updateNavBar();
+
+	            // Update Icon Status
+	            if(data.team_is_now_liked) {
+	                $("#toggle-team-like-button").removeClass('fa-regular fa-star').addClass('fa-solid fa-star')
+	                $("#toggle-team-like-button").attr("title", "Unlike Team");
+	            }
+	            else {
+	                $("#toggle-team-like-button").removeClass('fa-solid fa-star').addClass('fa-regular fa-star')
+	                $("#toggle-team-like-button").attr("title", "Like Team");
+	            }
+	        } else {
+	            alert("ajax call not successful");
+	        }
+	    }
+
+	    function updateDBLikeStatus() {
+	        {% if user.is_authenticated %}
+	            var teamID = "{{ team.teamID }}";
+	            $.ajax({
+	                url: '/nba/team-page/toggle-like/',
+	                data: {
+	                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+	                    'liked': liked,
+	                    'teamID': teamID
+	                },
+	                dataType: 'json',
+	                success: updateDBLikeStatusSuccess
+	            });
+	        {% else %}
+	            window.location.href="{% url 'login' %}"
+	        {% endif %}
+
+	    }
+	    $("#toggle-team-like-button").on("click", updateDBLikeStatus);
+	});
+</script>
