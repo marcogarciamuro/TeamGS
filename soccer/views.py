@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from soccer.models import Team, Article
 from soccer.forms import TeamSearch
 from nba.models import Team as NBATeam
@@ -23,10 +23,11 @@ headers = {
 }
 
 countries = [
-   'AFGHANISTAN', 'ALAND ISLANDS', 'ALBANIA', 'ALGERIA', 'AMERICAN SAMOA', 'ANDORRA', 'ANGOLA', 'ANGUILLA', 'ANTARCTICA', 'ANTIGUA AND BARBUDA', 'ARGENTINA', 'ARMENIA', 'ARUBA', 'AUSTRALIA', 'AUSTRIA', 'AZERBAIJAN', 'BAHAMAS', 'BAHRAIN', 'BANGLADESH', 'BARBADOS', 'BELARUS', 'BELGIUM', 'BELIZE', 'BENIN', 'BERMUDA', 'BHUTAN', 'BOLIVIA, PLURINATIONAL STATE OF', 'BONAIRE, SINT EUSTATIUS AND SABA', 'BOSNIA AND HERZEGOVINA', 'BOTSWANA', 'BOUVET ISLAND', 'BRAZIL', 'BRITISH INDIAN OCEAN TERRITORY', 'BRUNEI DARUSSALAM', 'BULGARIA', 'BURKINA FASO', 'BURUNDI', 'CAMBODIA', 'CAMEROON', 'CANADA', 'CAPE VERDE', 'CAYMAN ISLANDS', 'CENTRAL AFRICAN REPUBLIC', 'CHAD', 'CHILE', 'CHINA', 'CHRISTMAS ISLAND', 'COCOS (KEELING) ISLANDS', 'COLOMBIA', 'COMOROS', 'CONGO', 'CONGO, THE DEMOCRATIC REPUBLIC OF THE', 'COOK ISLANDS', 'COSTA RICA', "CÔTE D'IVOIRE", 'CROATIA', 'CUBA', 'CURAÇAO', 'CYPRUS', 'CZECH REPUBLIC', 'DENMARK', 'DJIBOUTI', 'DOMINICA', 'DOMINICAN REPUBLIC', 'ECUADOR', 'EGYPT', 'EL SALVADOR', 'EQUATORIAL GUINEA', 'ERITREA', 'ESTONIA', 'ETHIOPIA', 'FALKLAND ISLANDS (MALVINAS)', 'FAROE ISLANDS', 'FIJI', 'FINLAND', 'FRANCE', 'FRENCH GUIANA', 'FRENCH POLYNESIA', 'FRENCH SOUTHERN TERRITORIES', 'GABON', 'GAMBIA', 'GEORGIA', 'GERMANY', 'GHANA', 'GIBRALTAR', 'GREECE', 'GREENLAND', 'GRENADA', 'GUADELOUPE', 'GUAM', 'GUATEMALA', 'GUERNSEY', 'GUINEA', 'GUINEA-BISSAU', 'GUYANA', 'HAITI', 'HEARD ISLAND AND MCDONALD ISLANDS', 'HOLY SEE (VATICAN CITY STATE)', 'HONDURAS', 'HONG KONG', 'HUNGARY', 'ICELAND', 'INDIA', 'INDONESIA', 'IRAN, ISLAMIC REPUBLIC OF', 'IRAQ', 'IRELAND', 'ISLE OF MAN', 'ISRAEL', 'ITALY', 'JAMAICA', 'JAPAN', 'JERSEY', 'JORDAN', 'KAZAKHSTAN', 'KENYA', 'KIRIBATI', "KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF", 'KOREA, REPUBLIC OF', 'KUWAIT', 'KYRGYZSTAN', "LAO PEOPLE'S DEMOCRATIC REPUBLIC", 'LATVIA', 'LEBANON', 'LESOTHO', 'LIBERIA', 'LIBYA', 'LIECHTENSTEIN', 'LITHUANIA', 'LUXEMBOURG', 'MACAO', 'MACEDONIA, REPUBLIC OF', 'MADAGASCAR', 'MALAWI', 'MALAYSIA', 'MALDIVES', 'MALI', 'MALTA', 'MARSHALL ISLANDS', 'MARTINIQUE', 'MAURITANIA', 'MAURITIUS', 'MAYOTTE', 'MEXICO', 'MICRONESIA, FEDERATED STATES OF', 'MOLDOVA, REPUBLIC OF', 'MONACO', 'MONGOLIA', 'MONTENEGRO', 'MONTSERRAT', 'MOROCCO', 'MOZAMBIQUE', 'MYANMAR', 'NAMIBIA', 'NAURU', 'NEPAL', 'NETHERLANDS', 'NEW CALEDONIA', 'NEW ZEALAND', 'NICARAGUA', 'NIGER', 'NIGERIA', 'NIUE', 'NORFOLK ISLAND', 'NORTHERN MARIANA ISLANDS', 'NORWAY', 'OMAN', 'PAKISTAN', 'PALAU', 'PALESTINIAN TERRITORY, OCCUPIED', 'PANAMA', 'PAPUA NEW GUINEA', 'PARAGUAY', 'PERU', 'PHILIPPINES', 'PITCAIRN', 'POLAND', 'PORTUGAL', 'PUERTO RICO', 'QATAR', 'RÉUNION', 'ROMANIA', 'RUSSIAN FEDERATION', 'RWANDA', 'SAINT BARTHÉLEMY', 'SAINT HELENA, ASCENSION AND TRISTAN DA CUNHA', 'SAINT KITTS AND NEVIS', 'SAINT LUCIA', 'SAINT MARTIN (FRENCH PART)', 'SAINT PIERRE AND MIQUELON', 'SAINT VINCENT AND THE GRENADINES', 'SAMOA', 'SAN MARINO', 'SAO TOME AND PRINCIPE', 'SAUDI ARABIA', 'SENEGAL', 'SERBIA', 'SEYCHELLES', 'SIERRA LEONE', 'SINGAPORE', 'SINT MAARTEN (DUTCH PART)', 'SLOVAKIA', 'SLOVENIA', 'SOLOMON ISLANDS', 'SOMALIA', 'SOUTH AFRICA', 'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS', 'SPAIN', 'SRI LANKA', 'SUDAN', 'SURINAME', 'SOUTH SUDAN', 'SVALBARD AND JAN MAYEN', 'SWAZILAND', 'SWEDEN', 'SWITZERLAND', 'SYRIAN ARAB REPUBLIC', 'TAIWAN, PROVINCE OF CHINA', 'TAJIKISTAN', 'TANZANIA, UNITED REPUBLIC OF', 'THAILAND', 'TIMOR-LESTE', 'TOGO', 'TOKELAU', 'TONGA', 'TRINIDAD AND TOBAGO', 'TUNISIA', 'TURKEY', 'TURKMENISTAN', 'TURKS AND CAICOS ISLANDS', 'TUVALU', 'UGANDA', 'UKRAINE', 'UNITED ARAB EMIRATES', 'UNITED KINGDOM', 'UNITED STATES', 'UNITED STATES MINOR OUTLYING ISLANDS', 'URUGUAY', 'UZBEKISTAN', 'VANUATU', 'VENEZUELA, BOLIVARIAN REPUBLIC OF', 'VIETNAM', 'VIRGIN ISLANDS, BRITISH', 'VIRGIN ISLANDS', 'USA', 'WALLIS AND FUTUNA', 'YEMEN', 'ZAMBIA', 'ZIMBABWE'
+    'AFGHANISTAN', 'ALAND ISLANDS', 'ALBANIA', 'ALGERIA', 'AMERICAN SAMOA', 'ANDORRA', 'ANGOLA', 'ANGUILLA', 'ANTARCTICA', 'ANTIGUA AND BARBUDA', 'ARGENTINA', 'ARMENIA', 'ARUBA', 'AUSTRALIA', 'AUSTRIA', 'AZERBAIJAN', 'BAHAMAS', 'BAHRAIN', 'BANGLADESH', 'BARBADOS', 'BELARUS', 'BELGIUM', 'BELIZE', 'BENIN', 'BERMUDA', 'BHUTAN', 'BOLIVIA, PLURINATIONAL STATE OF', 'BONAIRE, SINT EUSTATIUS AND SABA', 'BOSNIA AND HERZEGOVINA', 'BOTSWANA', 'BOUVET ISLAND', 'BRAZIL', 'BRITISH INDIAN OCEAN TERRITORY', 'BRUNEI DARUSSALAM', 'BULGARIA', 'BURKINA FASO', 'BURUNDI', 'CAMBODIA', 'CAMEROON', 'CANADA', 'CAPE VERDE', 'CAYMAN ISLANDS', 'CENTRAL AFRICAN REPUBLIC', 'CHAD', 'CHILE', 'CHINA', 'CHRISTMAS ISLAND', 'COCOS (KEELING) ISLANDS', 'COLOMBIA', 'COMOROS', 'CONGO', 'CONGO, THE DEMOCRATIC REPUBLIC OF THE', 'COOK ISLANDS', 'COSTA RICA', "CÔTE D'IVOIRE", 'CROATIA', 'CUBA', 'CURAÇAO', 'CYPRUS', 'CZECH REPUBLIC', 'DENMARK', 'DJIBOUTI', 'DOMINICA', 'DOMINICAN REPUBLIC', 'ECUADOR', 'EGYPT', 'EL SALVADOR', 'EQUATORIAL GUINEA', 'ERITREA', 'ESTONIA', 'ETHIOPIA', 'FALKLAND ISLANDS (MALVINAS)', 'FAROE ISLANDS', 'FIJI', 'FINLAND', 'FRANCE', 'FRENCH GUIANA', 'FRENCH POLYNESIA', 'FRENCH SOUTHERN TERRITORIES', 'GABON', 'GAMBIA', 'GEORGIA', 'GERMANY', 'GHANA', 'GIBRALTAR', 'GREECE', 'GREENLAND', 'GRENADA', 'GUADELOUPE', 'GUAM', 'GUATEMALA', 'GUERNSEY', 'GUINEA', 'GUINEA-BISSAU', 'GUYANA', 'HAITI', 'HEARD ISLAND AND MCDONALD ISLANDS', 'HOLY SEE (VATICAN CITY STATE)', 'HONDURAS', 'HONG KONG', 'HUNGARY', 'ICELAND', 'INDIA', 'INDONESIA', 'IRAN, ISLAMIC REPUBLIC OF', 'IRAQ', 'IRELAND', 'ISLE OF MAN', 'ISRAEL', 'ITALY', 'JAMAICA', 'JAPAN', 'JERSEY', 'JORDAN', 'KAZAKHSTAN', 'KENYA', 'KIRIBATI', "KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF", 'KOREA, REPUBLIC OF', 'KUWAIT', 'KYRGYZSTAN', "LAO PEOPLE'S DEMOCRATIC REPUBLIC", 'LATVIA', 'LEBANON', 'LESOTHO', 'LIBERIA', 'LIBYA', 'LIECHTENSTEIN', 'LITHUANIA', 'LUXEMBOURG', 'MACAO', 'MACEDONIA, REPUBLIC OF', 'MADAGASCAR', 'MALAWI', 'MALAYSIA', 'MALDIVES', 'MALI', 'MALTA', 'MARSHALL ISLANDS', 'MARTINIQUE', 'MAURITANIA', 'MAURITIUS', 'MAYOTTE', 'MEXICO', 'MICRONESIA, FEDERATED STATES OF', 'MOLDOVA, REPUBLIC OF', 'MONACO', 'MONGOLIA', 'MONTENEGRO', 'MONTSERRAT', 'MOROCCO', 'MOZAMBIQUE', 'MYANMAR', 'NAMIBIA', 'NAURU', 'NEPAL', 'NETHERLANDS', 'NEW CALEDONIA', 'NEW ZEALAND', 'NICARAGUA', 'NIGER', 'NIGERIA', 'NIUE', 'NORFOLK ISLAND', 'NORTHERN MARIANA ISLANDS', 'NORWAY', 'OMAN', 'PAKISTAN', 'PALAU', 'PALESTINIAN TERRITORY, OCCUPIED', 'PANAMA', 'PAPUA NEW GUINEA', 'PARAGUAY', 'PERU', 'PHILIPPINES', 'PITCAIRN', 'POLAND', 'PORTUGAL', 'PUERTO RICO', 'QATAR', 'RÉUNION', 'ROMANIA', 'RUSSIAN FEDERATION', 'RWANDA', 'SAINT BARTHÉLEMY', 'SAINT HELENA, ASCENSION AND TRISTAN DA CUNHA', 'SAINT KITTS AND NEVIS', 'SAINT LUCIA', 'SAINT MARTIN (FRENCH PART)', 'SAINT PIERRE AND MIQUELON', 'SAINT VINCENT AND THE GRENADINES', 'SAMOA', 'SAN MARINO', 'SAO TOME AND PRINCIPE', 'SAUDI ARABIA', 'SENEGAL', 'SERBIA', 'SEYCHELLES', 'SIERRA LEONE', 'SINGAPORE', 'SINT MAARTEN (DUTCH PART)', 'SLOVAKIA', 'SLOVENIA', 'SOLOMON ISLANDS', 'SOMALIA', 'SOUTH AFRICA', 'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS', 'SPAIN', 'SRI LANKA', 'SUDAN', 'SURINAME', 'SOUTH SUDAN', 'SVALBARD AND JAN MAYEN', 'SWAZILAND', 'SWEDEN', 'SWITZERLAND', 'SYRIAN ARAB REPUBLIC', 'TAIWAN, PROVINCE OF CHINA', 'TAJIKISTAN', 'TANZANIA, UNITED REPUBLIC OF', 'THAILAND', 'TIMOR-LESTE', 'TOGO', 'TOKELAU', 'TONGA', 'TRINIDAD AND TOBAGO', 'TUNISIA', 'TURKEY', 'TURKMENISTAN', 'TURKS AND CAICOS ISLANDS', 'TUVALU', 'UGANDA', 'UKRAINE', 'UNITED ARAB EMIRATES', 'UNITED KINGDOM', 'UNITED STATES', 'UNITED STATES MINOR OUTLYING ISLANDS', 'URUGUAY', 'UZBEKISTAN', 'VANUATU', 'VENEZUELA, BOLIVARIAN REPUBLIC OF', 'VIETNAM', 'VIRGIN ISLANDS, BRITISH', 'VIRGIN ISLANDS', 'USA', 'WALLIS AND FUTUNA', 'YEMEN', 'ZAMBIA', 'ZIMBABWE'
 ]
 
 # Create your views here.
+
 
 def getLikedNBATeams(user):
     liked_teams = NBATeam.new_manager.filter(liked_by=user)
@@ -42,6 +43,7 @@ def getLikedNBATeams(user):
         }
         liked_teams.append(team)
     return liked_teams
+
 
 def index(request):
     search_form = TeamSearch()
@@ -61,8 +63,10 @@ def index(request):
     }
     return render(request, 'soccer/index.html', page_data)
 
+
 def team_not_found(request):
     return render(request, "soccer/team_not_found.html")
+
 
 def getLikedSoccerTeams(user):
     liked_teams = Team.new_manager.filter(liked_by=user)
@@ -79,7 +83,7 @@ def getLikedSoccerTeams(user):
         liked_teams.append(team)
     return liked_teams
 
-    
+
 # retrieves team ID based on team search to send to template to render widget with team's matches
 def team_page(request, team_name=None):
     search_form = TeamSearch()
@@ -87,8 +91,8 @@ def team_page(request, team_name=None):
     if(request.method == "POST"):
         print("IN TEAM PAGE VIEW")
         search_form = TeamSearch(request.POST)
-        if(search_form.is_valid()): # process form data which is the searched team name
-            team_search = search_form.cleaned_data["team_query"] 
+        if(search_form.is_valid()):  # process form data which is the searched team name
+            team_search = search_form.cleaned_data["team_query"]
 
             # retrieves team ID based on searched team
             team_id = get_teamID(team_search)
@@ -97,10 +101,11 @@ def team_page(request, team_name=None):
                 page_data = {
                     "team_found": False
                 }
-                team_not_found_url = "/soccer/team-not-found?team=" + team_search.replace(" ", "+")
+                team_not_found_url = "/soccer/team-not-found?team=" + \
+                    team_search.replace(" ", "+")
                 return HttpResponseRedirect(team_not_found_url)
 
-            # if team is in DB or in API endpoint   
+            # if team is in DB or in API endpoint
             if user_is_signed_in:
                 team = get_object_or_404(Team, teamID=team_id)
                 if team.liked_by.filter(id=request.user.id).exists():
@@ -115,7 +120,7 @@ def team_page(request, team_name=None):
             league_id = get_leagueID(team_id)
             team_name = get_teamName(team_id)
             team_logo = get_teamLogo(team_id)
-            
+
             # Fetch news articles using NewsAPI
             team = Team.objects.get(name=team_name)
             team_name_formatted = team_name.replace(" ", "-")
@@ -124,9 +129,8 @@ def team_page(request, team_name=None):
             page_data = {
                 "search_form": search_form,
                 "team_is_liked": team_is_liked,
-                "team_name": team_name,
+                "team": team,
                 "team_name_formatted": team_name_formatted,
-                "team_id": team_id,
                 "team_logo": team_logo,
                 "articles": articles,
                 "league_id": league_id,
@@ -164,13 +168,12 @@ def team_page(request, team_name=None):
             team_is_liked = False
 
         articles = get_articles(team)
-        
+
         page_data = {
             "search_form": search_form,
             "team_name_formatted": team_name_formatted,
             "team_is_liked": team_is_liked,
-            "team_name": team_name,
-            "team_id": team_id,
+            "team": team,
             "team_logo": team_logo,
             "articles": articles,
             "league_id": league_id,
@@ -179,6 +182,7 @@ def team_page(request, team_name=None):
             "liked_nba_teams": liked_nba_teams
         }
     return render(request, 'soccer/team_page.html', page_data)
+
 
 def get_teamLogo(team_id):
     return Team.objects.get(teamID=team_id).logo
@@ -189,32 +193,30 @@ def get_teamID(team_search):
     if Team.objects.filter(name__icontains=team_search).exists():
         team_id = Team.objects.get(name__icontains=team_search).teamID
 
-    
     # if team is currently in Database, make api call to search for team, get ID, and create team object
     else:
         conn = http.client.HTTPSConnection("api-football-v1.p.rapidapi.com")
         if team_search.upper() in countries:
             endpoint = '/v3/teams?name=' + team_search
-        else: 
+        else:
             team_search = team_search.replace(" ", "%20")
             endpoint = "/v3/teams?search=" + team_search
-        conn.request("GET", endpoint, headers=headers)  # send GET request to host
+        # send GET request to host
+        conn.request("GET", endpoint, headers=headers)
         res = conn.getresponse()  # Get response from server
         data = res.read()  # Reads and returns the response body
         # convert JSON format to Python dictionary
         result_dict = json.loads(data)
         results = result_dict['results']
         if results == 0:
-            return None 
+            return None
 
         teams = result_dict['response']  # actual useful data
         errors = result_dict['errors']  # store any possible errors
 
-    
-
         if len(errors) > 0:  # check to see if there were errors in the response receieved
             print("Error(s) occured\n")
-        
+
         team_info = teams[0]['team']
 
         team_name = team_info['name']
@@ -232,8 +234,10 @@ def get_teamID(team_search):
         createTeam(team_details)
     return team_id
 
+
 def get_teamName(team_id):
     return Team.objects.get(teamID=team_id).name
+
 
 def get_leagueID(team_id):
     if Team.objects.filter(teamID=team_id).exists():
@@ -241,7 +245,8 @@ def get_leagueID(team_id):
     else:
         conn = http.client.HTTPSConnection("api-football-v1.p.rapidapi.com")
         endpoint = "/v3/leagues?team=" + str(team_id)
-        conn.request("GET", endpoint, headers=headers)  # send GET request to host
+        # send GET request to host
+        conn.request("GET", endpoint, headers=headers)
         res = conn.getresponse()  # Get response from server
         data = res.read()  # Reads and returns the response body
         # convert JSON format to Python dictionary
@@ -260,16 +265,18 @@ def createTeam(team_details):
     team_id = team_details['team_id']
     team_logo = team_details['logo']
     leagueID = team_details['leagueID']
-    Team.objects.create(name=team_name, teamID=team_id, leagueID=leagueID, logo=team_logo)
+    Team.objects.create(name=team_name, teamID=team_id,
+                        leagueID=leagueID, logo=team_logo)
 
-## Takes a leagueID and checks if season has ended
+# Takes a leagueID and checks if season has ended
+
+
 def hasLeagueSeasonEnded(leagueID):
     conn = http.client.HTTPSConnection("api-football-v1.p.rapidapi.com")
     endpoint = "/v3/leagues?id=" + leagueID
     conn.request("GET", endpoint, headers=headers)  # send GET request to host
     res = conn.getresponse()  # Get response from server
     data = res.read()  # Reads and returns the response body
-
 
 
 def get_articles_fromAPI(search_term, num_articles):
@@ -313,8 +320,8 @@ def get_articles_fromAPI(search_term, num_articles):
             "thumbnail": thumbnail,
             "url": url
         })
-    
-    article_list.sort(key = lambda x:x['date'])
+
+    article_list.sort(key=lambda x: x['date'])
     for article in article_list:
         if len(articles) < num_articles:
             title = article["title"]
@@ -335,6 +342,7 @@ def get_articles_fromAPI(search_term, num_articles):
             articles.append(article)
     return reversed(articles)
 
+
 def get_cached_articles(team):
     article_set = Article.objects.filter(team=team)[:5:-1]
     articles = []
@@ -348,6 +356,7 @@ def get_cached_articles(team):
         }
         articles.append(article)
     return articles
+
 
 def appendArticleLists(laLigaArticles, premierLeagueArticles, serieaArticles, ligue1Articles, bundesligaArticles):
     articles = []
@@ -363,15 +372,18 @@ def appendArticleLists(laLigaArticles, premierLeagueArticles, serieaArticles, li
         articles.append(article)
     return articles
 
+
 def get_articles(team):
     if team == "soccer":
         num_articles = 1
         laLigaArticles = get_articles_fromAPI("la+liga", num_articles)
-        premierLeagueArticles = get_articles_fromAPI("premier+league", num_articles)
+        premierLeagueArticles = get_articles_fromAPI(
+            "premier+league", num_articles)
         serieaArticles = get_articles_fromAPI("serie+a", num_articles)
         ligue1Articles = get_articles_fromAPI("ligue+1", num_articles)
         bundesligaArticles = get_articles_fromAPI("bundesliga", num_articles)
-        articles = appendArticleLists(laLigaArticles, premierLeagueArticles, serieaArticles, ligue1Articles, bundesligaArticles)
+        articles = appendArticleLists(
+            laLigaArticles, premierLeagueArticles, serieaArticles, ligue1Articles, bundesligaArticles)
     elif team.name.upper() in countries:
         search_query = team.name + "+" + "soccer"
         print("ARTICLE SEARCH QUERY = " + search_query)
@@ -382,26 +394,37 @@ def get_articles(team):
         articles = get_articles_fromAPI(team_name_cleaned, num_articles)
     return articles
 
+
 def upcoming_matches(request, id):
     page_data = {
         "id": id
     }
     return render(request, "soccer/upcoming_matches.html", page_data)
 
-@login_required(login_url='/login/')
-def toggleLike(request, team_name):
-    team_name = team_name.replace("-", " ")
-    team_id = get_teamID(team_name)
-    team = Team.objects.get(teamID = team_id)
-    if team.liked_by.filter(id=request.user.id).exists():
-        team.liked_by.remove(request.user)
-        team.save()
-    else:
-        team.liked_by.add(request.user)
-        team.save()
-    team_name = team_name.replace(" ", "-")
-    team_page = "/soccer/team-page/" + team_name + "/"
-    return HttpResponseRedirect(team_page)
+
+def toggle_team_like(request):
+    liked = request.GET.get('liked', False) == 'true'
+    teamID = request.GET.get('teamID', False)
+    team = Team.objects.get(teamID=teamID)
+    try:
+        if liked:
+            team.liked_by.remove(request.user)
+            team.save()
+            return JsonResponse({
+                "success": True,
+                "team_is_now_liked": False
+            })
+        else:
+            team.liked_by.add(request.user)
+            team.save()
+            return JsonResponse({
+                "success": True,
+                "team_is_now_liked": True
+            })
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+        })
 
 
 def liked_list(request):
@@ -411,10 +434,11 @@ def liked_list(request):
         "teams_liked": teams_liked
     }
     return render(request, "accounts/liked.html", page_data)
-    
+
 
 def chat(request):
     return render(request, 'soccer/chat.html')
+
 
 def room(request, room_name):
     page_data = {

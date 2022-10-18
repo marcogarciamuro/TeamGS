@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    {% include "bootstrap.html" %}
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
-    <title>Homepage</title>
+    <head>
+        {% include "bootstrap.html" %}
+        {% load static %}
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Sports Website" />
+        <meta name="keywords" content="sports, website, soccer, basketball" />
+        <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
+        <title>Homepage</title>
     </head>
-
-<body 
-        class="bg-image"
-        style="
-            background-image: url('/static/background.png');
-            height: 100%;
-        ">
+    <body class="bg-image"
+          style=" background-image: url('/static/background.png'); height: 100%; ">
         <div class="min-vw-100 min-100 d-flex flex-column">
             {% include "navigation.html" %}
             <div class="row d-flex flex-grow-1 align-items-center justify-content-center">
@@ -25,10 +21,13 @@
                     <strong>Free. Simple. Informative.</strong>
                 </main>
                 <div class="col ps-5 pe-5 align-self-end">
-                    <img class="indexPic d-block m-auto" src="/static/ronaldoLebron.png">
+                    <img src="{% static "ronaldoLebron.png" %}"
+                         alt="Landing Page Athletes"
+                         width="100%"
+                         height="100%"
+                         class="indexPic d-block m-auto"/>
                 </div>
             </div>
         </div>
-</body>
-
+    </body>
 </html>

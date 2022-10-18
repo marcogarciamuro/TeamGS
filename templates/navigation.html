@@ -1,113 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        {% load static %}
+        {% load extras %}
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="Sports Website" />
+        <meta name="keywords" content="sports, website, soccer, basketball" />
+        <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
+        <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
+        <title>Navigation Bar</title>
+    </head>
+    <body>
+        <script>
+            $(function(){
+                {% if user.is_authenticated %} getLikedTeams();{% endif %}
 
-<head>
-    {% load static %}
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="{%static 'teamGS.css' %}" />
-    <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
-    <title>Navigation Bar</title>
-</head>
+                // Create list item for each liked team with teamID
+                function getLikedTeamsSuccess(data) {
+                    if(data.success) {
+                        var liked_soccer_teams = data.liked_soccer_teams;
+                        for(var i = 0; i < liked_soccer_teams.length; i++) {
+                            var team_name = liked_soccer_teams[i].name;
+                            var team_id = liked_soccer_teams[i].teamID;
+                            var team_name_cleaned = team_name.replace(" ", "-");
+                            var url = "{% url 'soccer-team-page' 'name' %}".replace('name', team_name_cleaned);
+                            $("#liked-soccer-teams").append(
+                                $('<li/>', {'id': 'soccer-'+team_id}).append(
+                                    $('<a/>', {
+                                        'class': 'dropdown-item',
+                                        'href': url, 
+                                        text: team_name,
+                                    })
+                                )
+                            )
+                        }
+                        var liked_nba_teams = data.liked_nba_teams;
+                        for(var i = 0; i < liked_nba_teams.length; i++) {
+                            var team_name = liked_nba_teams[i].name;
+                            var team_name_cleaned = team_name.replace(" ", "-");
+                            var team_id = liked_nba_teams[i].teamID;
+                            var url = "{% url 'nba-team-page' 'name' %}".replace('name', team_name_cleaned);
+                            $("#liked-nba-teams").append(
+                                $('<li/>', {'id': 'nba-'+ team_id}).append(
+                                    $('<a/>', {
+                                        'class': 'dropdown-item',
+                                        'href': url, 
+                                        text: team_name,
+                                    })
+                                )
+                            )
+                        }
+                    }
+                    else {
+                        console.log("Error retreiving liked teams")
+                    }
 
-<body>
-    <div class="d-flex flex-column">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container">
-                <a class="navbar-brand" href="/">
-                    <span id="outline">
-                        <span id="logoText">
-                            <span>Team</span><span style="color:rgb(0, 162, 255)">GS</span>
+                }
+                function getLikedTeams() {
+                    $.ajax({
+                        url: '/get-liked-teams/',
+                        data: {
+                            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
+                            'username': '{{ user.username }}'
+                        },
+                        dataType: 'json',
+                        success: getLikedTeamsSuccess
+                    })
+                }
+            });
+        </script>
+        {% csrf_token %}
+        <div class="d-flex flex-column">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container">
+                    <a class="navbar-brand" href="{% url 'index' %}">
+                        <span id="outline">
+                            <span id="logoText">
+                                <span>Team</span><span style="color:rgb(0, 162, 255)">GS</span>
+                            </span>
                         </span>
-                    </span>
-                    <img src="{%static 'logo_img.png'%}" width="65" height="55" />
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="nav navbar-nav ms-auto justify-content-end">
-                        <li class="nav-item">
-                            <a 
-                                class="nav-link " 
-                                href="/soccer">
-                                Soccer
-                                <i class="fa-solid fa-futbol"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a 
-                                class="nav-link " 
-                                href="/nba">
-                                NBA
-                                <i class="fa-solid fa-basketball"></i>
-                            </a>
-                        </li>
-                        {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarLightDropdownMenuLink" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                My Teams
-                                <i class="fa-solid fa-people-group"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
-                                <li><a class="dropdown-item" href="/soccer"><strong>Soccer</strong></a></li>
-                                {% for team in liked_soccer_teams %}
-                                <li>
-                                    <a class="dropdown-item" href="/soccer/team-page/{{ team.formatted_name }}/">
-                                        {{ team.name }}
+                        <img src="{% static 'logo_img.png' %}"
+                             alt="TeamGS Logo"
+                             width="65"
+                             height="55"/>
+                    </a>
+                    <button class="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav ms-auto justify-content-end">
+                            <li class="nav-item">
+                                <a class="nav-link " href="{% url 'soccer-index' %}">
+                                    Soccer
+                                    <i class="fa-solid fa-futbol"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " href="{% url 'nba-index' %}">
+                                    NBA
+                                    <i class="fa-solid fa-basketball"></i>
+                                </a>
+                            </li>
+                            {% if user.is_authenticated %}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle"
+                                       href="#"
+                                       id="navbarLightDropdownMenuLink"
+                                       role="button"
+                                       data-bs-toggle="dropdown"
+                                       aria-expanded="false">
+                                        My Teams
+                                        <i class="fa-solid fa-people-group"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-light"
+                                        aria-labelledby="navbarLightDropdownMenuLink">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'soccer-index' %}"><strong>Soccer</strong></a>
+                                        </li>
+                                        <div id="liked-soccer-teams">
+                                            {% comment %} {% for team in liked_soccer_teams %}
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'soccer-team-page' team.formatted_name %}">{{ team.name }}</a>
+                                                </li>
+                                            {% endfor %} {% endcomment %}
+                                        </div>
+                                        <li>
+                                            <hr class="dropdown-divider" />
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'nba-index' %}"><strong>NBA</strong></a>
+                                        </li>
+                                        <div id="liked-nba-teams">
+                                            {% comment %} {% for team in liked_nba_teams %}
+                                                <li>
+                                                    <a class="dropdown-item" href="{% url 'nba-team-page' team.formatted_name %}">{{ team.name }}</a>
+                                                </li>
+                                            {% endfor %} {% endcomment %}
+                                        </div>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'about' %}">
+                                    About
+                                    <i class="fa-solid fa-circle-question"></i>
+                                </a>
+                            </li>
+                            {% if user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'logout' %}">
+                                        Log Out
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
                                     </a>
                                 </li>
-                                {% endfor %}
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="/nba"><strong>NBA</strong></a></li>
-                                {% for team in liked_nba_teams %}
-                                <li>
-                                    <a class="dropdown-item" href="/nba/team-page/{{ team.formatted_name }}/">
-                                        {{ team.name }}
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'login' %}">
+                                        Log In
+                                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
                                     </a>
                                 </li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a 
-                                class="nav-link" 
-                                href="/about">
-                                About
-                                <i class="fa-solid fa-circle-question"></i>
-                            </a>
-                        </li>
-                        {% if user.is_authenticated %}
-
-                        <li class="nav-item">
-                            <a 
-                                class="nav-link" 
-                                href="/logout">
-                                Log Out
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                            </a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item">
-                            <a 
-                                class="nav-link" 
-                                href="/login">
-                                Log In
-                                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </div>
-</body>
-
+            </nav>
+        </div>
+    </body>
 </html>

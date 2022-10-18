@@ -1,148 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    {% include "bootstrap.html" %} {% load static %}
-    <meta charset="utf-8" http-equiv="refresh" content="60">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
-    <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
-    <title>NBA</title>
-</head>
-
-<body>
-    {% include "navigation.html" %}
-    <div class="container">
-        <div class="container mt-3">
-            <form method="POST" action="/nba/team-page/" class="mt-3 mb-5">
-                <div class="row justify-content-end">
-                    <div class="col-auto">
-                        <div class="input-group">
-                            {% csrf_token %}
-                            {{ search_form }}
-                            <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+    <head>
+        {% include "bootstrap.html" %}
+        {% load static %}
+        <meta charset="utf-8" http-equiv="refresh" content="60" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
+        <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
+        <meta name="description" content="Sports Website" />
+        <meta name="keywords" content="sports, website, soccer, basketball" />
+        <title>NBA</title>
+    </head>
+    <body>
+        {% include "navigation.html" %}
+        <div class="container">
+            <div class="container mt-3">
+                <form method="post" action="{% url 'nba-team-page' %}" class="mt-3 mb-5">
+                    <div class="row justify-content-end">
+                        <div class="col-auto">
+                            <div class="input-group">
+                                {% csrf_token %}
+                                {{ search_form }}
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
-            <h1>
-                NBA
-                <i class="fa-solid fa-basketball"></i>
-            </h1>
-        </div>
-        <br>
-        {% if live_games == None %}
-        <div class="container mt-3">
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                    <div class="container mb-5 mt-3 ps-0">
-                        <h2>Live Games</h2>
-                        <p>No games in progress</p>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                    <div class="container mt-3 ps-0">
-                        <h2>Popular Articles</h2>
-                        {% for article in articles %}
-                        <ul class="ps-0">
-                            <h5>{{ article.title }}</h5>
-                            <img src="{{ article.thumbnail }}" width="50%" height="50%">
-                            <p class="description">{{ article.description }} </p>
-                            <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go
-                                to article</a>
-                        </ul>
-                        {% endfor %}
-                    </div>
-                </div>
+                </form>
+                <h1>
+                    NBA
+                    <i class="fa-solid fa-basketball"></i>
+                </h1>
             </div>
-
-            {% else %}
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                    <h2>Live Games</h2>
-                    {% for game in live_games %}
-                    Quarter {{ game.quarter}}:
-                    <div class="spinner-grow spinner-grow-sm text-danger" role="status">
-                        <span class="visually-hidden"></span>
+            <br />
+            {% if live_games == None %}
+                <div class="container mt-3">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="container mb-5 mt-3 ps-0">
+                                <h2>Live Games</h2>
+                                <p>No games in progress</p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="container mt-3 ps-0">
+                                <h2>Popular Articles</h2>
+                                {% for article in articles %}
+                                    <ul class="ps-0">
+                                        <h5>{{ article.title }}</h5>
+                                        <img src="{{ article.thumbnail }}"
+                                             alt="article thumbnail"
+                                             width="50%"
+                                             height="50%"/>
+                                        <p class="description">{{ article.description }}</p>
+                                        <a class="description"
+                                           href="{{ article.url }}"
+                                           target="_blank"
+                                           rel="noopener noreferrer">Go
+                                        to article</a>
+                                    </ul>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
-                    <a href="/nba/team-page/{{ team.formatted_name }}/"></a>
-                    {{ game.home_team.name }}
-                    <img src="{{ game.home_team.logo }}" width="50%" height="50%">
-                    {{ game.home_team_points}}
-                    -
-                    {{ game.away_team_points }}
-                    <img src="{{ game.away_team.logo }}" width="50%" height="50%">
-                    {{ game.away_team.name }}
-                    {% endfor %}
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                    <h2>Popular Articles</h2>
-                    {% for article in articles %}
-                    <ul class="ps-0">
-                        <h5>{{ article.title }}</h5>
-                        <img src="{{ article.thumbnail }}" width="50%" height="50%">
-                        <p class="description">{{ article.description }} </p>
-                        <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to
-                            article</a>
-                    </ul>
-                    {% endfor %}
-                </div>
+                {% else %}
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <h2>Live Games</h2>
+                            {% for game in live_games %}
+                                Quarter {{ game.quarter }}:
+                                <div class="spinner-grow spinner-grow-sm text-danger" role="status">
+                                    <span class="visually-hidden"></span>
+                                </div>
+                                {% comment %} <a href="{% url 'nba-team-page' team.formatted_name %}"></a> {% endcomment %}
+                                {{ game.home_team.name }}
+                                <img src="{{ game.home_team.logo }}"
+                                     alt="Home Team Logo"
+                                     width="50%"
+                                     height="50%"/>
+                                {{ game.home_team_points }}
+                                -
+                                {{ game.away_team_points }}
+                                <img src="{{ game.away_team.logo }}"
+                                     alt="Away Team Logo"
+                                     width="50%"
+                                     height="50%"/>
+                                {{ game.away_team.name }}
+                            {% endfor %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <h2>Popular Articles</h2>
+                            {% for article in articles %}
+                                <ul class="ps-0">
+                                    <h5>{{ article.title }}</h5>
+                                    <img src="{{ article.thumbnail }}"
+                                         alt="Article Thumbnail"
+                                         width="50%"
+                                         height="50%"/>
+                                    <p class="description">{{ article.description }}</p>
+                                    <a class="description"
+                                       href="{{ article.url }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer">Go to
+                                    article</a>
+                                </ul>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
-        <!-- <table class="top">
-            <h2>Live Games:</h2>
-            {% for game in live_games %}
-            <tr>
-                <td>
-                    Quarter {{ game.quarter}}:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="spinner-grow spinner-grow-sm text-danger" role="status">
-                        <span class="visually-hidden"></span>
-                    </div>
-                </td>
-                <td style="padding-left: 0;">
-                    <a href="/nba/team-page/{{ team.formatted_name }}/"></a>
-                </td>
-                <td>
-                    {{ game.home_team.name }}
-                </td>
-                <td>
-                    <img width="50px" height="50px" src={{ game.home_team.logo }} width="50%" height="50%"></img>
-                </td>
-                <td>
-                    {{ game.home_team_points}}
-                </td>
-                <td>
-                    -
-                </td>
-                <td>
-                    {{ game.away_team_points }}
-                </td>
-                <td>
-                    <img width="50px" height="50px" src={{ game.away_team.logo }} width="50%" height="50%"></img>
-                </td>
-                <td>
-                    {{ game.away_team.name }}
-                </td>
-                <td rowspan="2" width="50%">
-                    <h2>Popular Articles</h2>
-                    {% for article in articles %}
-                    <ul>
-                        <h3>{{ article.title }}</h3>
-                        <img src={{ article.thumbnail }} width="50%" height="50%"></img>
-                        <p class="description">{{ article.description }} </p>
-                        <a class="description" href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
-                    </ul>
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table> -->
-    </div>
-</body>
-
+    </body>
 </html>
