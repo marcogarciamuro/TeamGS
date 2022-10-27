@@ -3,7 +3,7 @@ services:
     image: redis:5
     container_name: redis
     restart: always
-    ports: 
+    ports:
       - "6379:6379"
 
   web:
@@ -12,11 +12,10 @@ services:
       dockerfile: Dockerfile
     image: us.gcr.io/teamgs/teamgs_web:latest
     container_name: teamgs_web
-    command: python manage.py runserver 0.0.0.0:80
     restart: always
     ports:
-      - "80:80"
-    depends_on: 
+      - "8000:8000"
+    links: 
       - redis
 
   channels:
@@ -26,7 +25,19 @@ services:
     image: us.gcr.io/teamgs/teamgs_channels:latest
     container_name: teamgs_channels
     restart: always
-    ports:
+    ports: 
       - "8001:8001"
-    depends_on:
+    links:
       - redis
+  
+  nginx:
+    build: 
+      context: .
+      dockerfile: Dockerfile-nginx
+    image: us.gcr.io/teamgs/teamgs_nginx:latest
+    container_name: nginx
+    depends_on:
+      - web
+      - channels
+    ports:
+     - "80:80"

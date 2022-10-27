@@ -6,7 +6,7 @@ from datetime import date
 class NewManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset()
-    
+
 
 # Create your models here.
 class Team(models.Model):
@@ -26,21 +26,26 @@ class Team(models.Model):
     objects = models.Manager()
     new_manager = NewManager()
 
+
 class Game(models.Model):
     game_id = models.IntegerField(primary_key=True)
     status = models.CharField(max_length=10)
     quarter = models.PositiveSmallIntegerField(null=True, blank=True)
-    home_team = models.ForeignKey(Team, related_name="home_game", on_delete=models.CASCADE)
-    away_team = models.ForeignKey(Team, related_name="away_game",  on_delete=models.CASCADE)
+    home_team = models.ForeignKey(
+        Team, related_name="home_game", on_delete=models.CASCADE)
+    away_team = models.ForeignKey(
+        Team, related_name="away_game",  on_delete=models.CASCADE)
     home_team_points = models.IntegerField(blank=True, null=True)
     away_team_points = models.IntegerField(blank=True, null=True)
     date = models.DateField(blank=True)
+
     class Meta:
         get_latest_by = ['date']
 
+
 class Article(models.Model):
-    team = models.ForeignKey(Team, default=None, 
-        blank=True, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, default=None,
+                             blank=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, primary_key=True)
     author = models.CharField(max_length=100, blank=True)
     thumbnail = models.CharField(max_length=200)

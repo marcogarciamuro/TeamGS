@@ -1,0 +1,147 @@
+#logoText {
+    font-weight: 900;
+    font-size: 40px;
+}
+
+.navBarItem {
+    font-size: 25px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.centerText {
+    text-align: center;
+}
+
+.nav-item {
+    font-size: 20px;
+}
+
+.navbar .navbar-nav .nav-link:hover {
+    color: rgb(0, 162, 255);
+}
+
+.SignupBox {
+    background-color: gray;
+}
+
+.form-signin {
+    margin: auto;
+}
+
+.removeLinkUnderline {
+    text-decoration: none;
+}
+
+.centered {
+    font-size: 50px;
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+}
+
+.bigLink {
+    font-size: 20px;
+}
+
+.subtitle {
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+#nbaLogo {
+    max-height: 500px;
+    max-width: 500px;
+    height: auto;
+    width: auto;
+}
+
+html.index,
+body.index {
+    height: 100%;
+    margin: auto auto 0;
+    overflow: hidden;
+}
+
+.bg {
+    background-image: url("/static/landingPic.jpg");
+    height: 100%;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: auto auto 0;
+}
+
+.full {
+    height: 100%;
+    margin: 0;
+}
+
+#background {
+    width: 100%;
+    height: 100%;
+}
+
+#toggle-team-like-button {
+    background: transparent;
+    border: none !important;
+}
+
+.bigPaddingBetweenCols td,
+th {
+    padding: 0 15px;
+}
+
+.smallPaddingBetweenCols td,
+th {
+    padding: 0 5px;
+}
+
+table.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.top td,
+table.top td * {
+    vertical-align: top;
+}
+
+div.widget.p {
+    font-size: 16px;
+}
+
+p.description,
+a.description {
+    font-size: 16px;
+    line-height: 150%;
+}
+
+.aboutText {
+    font-size: 20px;
+    line-height: 150%;
+}
+
+.min-100 {
+    min-height: 100%;
+}
+
+html, body {
+    height: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.indexPic {
+    width: auto;
+    height: auto;
+    min-width: 208px;
+    min-height: 108px;
+    max-width: 75%;
+    max-height: 75%;
+}

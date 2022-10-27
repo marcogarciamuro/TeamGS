@@ -1,8 +1,6 @@
 FROM python:3.8.5
 COPY requirements.txt ./
-RUN pip3 install --user -r requirements.txt
+RUN pip3 install -r requirements.txt
 COPY . ./
-COPY run_daphne.sh ./
 RUN chmod +x run_daphne.sh
-EXPOSE 8001
 ENTRYPOINT [ "./run_daphne.sh" ]
