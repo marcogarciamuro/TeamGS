@@ -1,5 +1,6 @@
 from calendar import day_abbr
 from dateutil import tz
+from django import conf
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.db.models import Q
@@ -167,20 +168,17 @@ def team_page(request, team_name=None):
         if(search_form.is_valid()):  # process form data which is the searched team name
             team_search = search_form.cleaned_data["team_query"]
             team_name = team_search
-            team_id = get_teamID(team_name)
-            if team_id is None:
+            team = get_team(team_name)
+            if team is None:
                 print("TEAM NOT FOUND")
                 return render(request, "nba/team_not_found.html")
 
-            print(team_id)
-            teamObj = Team.objects.get(teamID=team_id)
-            team_name = teamObj.name
-            games = get_games(teamObj)
-            standings = get_standings(teamObj)
-            articles = get_articles(teamObj)
+            team_name = team.name
+            games = get_games(team)
+            standings = get_standings(team)
+            articles = get_articles(team)
 
             if user_is_signed_in:
-                team = Team.objects.get(teamID=team_id)
                 if team.liked_by.filter(id=request.user.id).exists():
                     team_is_liked = True
                 else:
@@ -196,7 +194,7 @@ def team_page(request, team_name=None):
             page_data = {
                 "search_form": search_form,
                 "team_is_liked": team_is_liked,
-                "team": teamObj,
+                "team": team,
                 "formatted_team_name": formatted_team_name,
                 "games": games,
                 "articles": articles,
@@ -209,14 +207,12 @@ def team_page(request, team_name=None):
     else:
         formatted_team_name = team_name
         team_name = team_name.replace("-", " ")
-        team_id = get_teamID(team_name)
-        team = Team.objects.get(teamID=team_id)
+        team = get_team(team_name)
         articles = get_articles(team)
         games = get_games(team)
         standings = get_standings(team)
 
         if user_is_signed_in:
-            team = Team.objects.get(teamID=team_id)
             if team.liked_by.filter(id=request.user.id).exists():
                 team_is_liked = True
             else:
@@ -255,8 +251,15 @@ def get_standings(teamObj):
     api_response = json.loads(data)
     standings = api_response["response"]
     for position in standings:
-        team_id = position["team"]["id"]
-        team = Team.objects.get(teamID=team_id)
+        team_info = position["team"]
+        team_id = team_info["id"]
+        try:
+            team = Team.objects.get(teamID=team_id)
+        except:
+            Team.objects.create(name=team_info["name"],
+                                teamID=team_id, logo=team_info["logo"], conference=team_conference)
+            team = Team.objects.get(teamID=team_id)
+
         team.rank = position["conference"]["rank"]
         team.win_pct = float(position["win"]["percentage"])
         team.wins = position["win"]["total"]
@@ -267,18 +270,35 @@ def get_standings(teamObj):
     return standings
 
 
-def get_teamID(team_name):
+def get_team(team_name):
     print("looking for team name" + team_name)
     # check if team searched is currently in DB
     if Team.objects.filter(name__icontains=team_name).exists():
-        print("in database not making call to API")
-        # retreive team ID
-        team_id = Team.objects.get(name__icontains=team_name).teamID
-        print(team_id)
+        # retreive team
+        team = Team.objects.get(name__icontains=team_name)
+        return team
     else:
-        return None
-        print("team not in DB")
-    return str(team_id)
+        team_search = team_name.replace(" ", "%20")
+        conn = http.client.HTTPSConnection("api-nba-v1.p.rapidapi.com")
+        endpoint = "/teams?search=" + team_search
+        conn.request("GET", endpoint, headers=headers)
+        res = conn.getresponse()
+        data = res.read()
+        result_dict = json.loads(data)
+        results = result_dict['results']
+        if results == 0:
+            return None
+        payload = results['response']
+        team_info = payload[0]
+        team_id = team_info['id']
+        team_name = team_info['name']
+        team_logo = team_info['logo']
+        team_conference = team_info['leagues']['standard']['conference']
+        Team.objects.create(teamID=team_id, name=team_name,
+                            logo=team_logo, conference=team_conference
+                            )
+        team = Team.objects.get(teamID=team_id)
+        return team
 
 
 def get_games(teamObj):

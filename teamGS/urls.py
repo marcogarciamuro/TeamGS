@@ -23,6 +23,7 @@ from soccer import views as soccer_views
 from nba import views as nba_views
 from django.contrib.staticfiles.views import serve
 
+
 def return_static(request, path, insecure=True, **kwargs):
     return serve(request, path, insecure, **kwargs)
 
@@ -44,8 +45,8 @@ urlpatterns = [
     path('soccer/upcoming-matches/<int:id>/', soccer_views.upcoming_matches),
     path('soccer/team-page/toggle-like/',
          soccer_views.toggle_team_like, name="soccer-toggle-like"),
-    path('nba/', nba_views.index, name="nba-index"),
     path('nba/team-page/', nba_views.team_page, name="nba-team-page"),
+    path('nba/', nba_views.index, name="nba-index"),
     path('soccer/team-not-found/', nba_views.team_not_found),
     path('nba/team-page/toggle-like/',
          nba_views.toggleTeamLike, name="nba-toggle-like"),

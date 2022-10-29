@@ -19,7 +19,7 @@ class Team(models.Model):
     wins = models.PositiveSmallIntegerField(blank=True, null=True)
     losses = models.PositiveSmallIntegerField(blank=True, null=True)
     win_pct = models.DecimalField(max_digits=4, decimal_places=3, null=True)
-    logo = models.ImageField()
+    logo = models.ImageField(max_length=255)
     liked_by = models.ManyToManyField(
         User, related_name='%(class)s_liked_nba_teams', default=None, blank=True)
     last_updated = models.DateField(default=date.today)
