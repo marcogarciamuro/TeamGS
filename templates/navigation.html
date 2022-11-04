@@ -124,26 +124,14 @@
                                         <li>
                                             <a class="dropdown-item" href="{% url 'soccer-index' %}"><strong>Soccer</strong></a>
                                         </li>
-                                        <div id="liked-soccer-teams">
-                                            {% comment %} {% for team in liked_soccer_teams %}
-                                                <li>
-                                                    <a class="dropdown-item" href="{% url 'soccer-team-page' team.formatted_name %}">{{ team.name }}</a>
-                                                </li>
-                                            {% endfor %} {% endcomment %}
-                                        </div>
+                                        <div id="liked-soccer-teams"></div>
                                         <li>
                                             <hr class="dropdown-divider" />
                                         </li>
                                         <li>
                                             <a class="dropdown-item" href="{% url 'nba-index' %}"><strong>NBA</strong></a>
                                         </li>
-                                        <div id="liked-nba-teams">
-                                            {% comment %} {% for team in liked_nba_teams %}
-                                                <li>
-                                                    <a class="dropdown-item" href="{% url 'nba-team-page' team.formatted_name %}">{{ team.name }}</a>
-                                                </li>
-                                            {% endfor %} {% endcomment %}
-                                        </div>
+                                        <div id="liked-nba-teams"></div>
                                     </ul>
                                 </li>
                             {% endif %}

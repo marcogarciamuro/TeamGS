@@ -66,10 +66,10 @@
                             <div class="container mb-5 ps-0 pe-0">
                                 <h2>Previous Games</h2>
                                 {% for game in games.previous_games %}
-                                    <div class="row">
-                                        <div class="col">{{ game.date }}</div>
+                                    <div class="row pt-2">
+                                        <div class="col text-center">{{ game.date|date:"D, M d, h:i A" }}</div>
                                     </div>
-                                    <div class="row align-items-center">
+                                    <div class="row align-items-center pb-2">
                                         <div class="col-4 ps-0">
                                             <div class="row align-items-center justify-content-end">
                                                 <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
@@ -130,42 +130,55 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <br/>
+                                    <hr class="dropdown-divider" />
                                 {% endfor %}
                             </div>
                         </div>
                         <!-- Upcoming Games -->
                         <div class="col-12">
-                            <div class="container mb-5 ps-0">
+                            <div class="container mb-5 ps-0 pe-0">
                                 <h2>Scheduled Games</h2>
                                 {% if games.upcoming_games == None %}<p>No Immediate Scheduled Games</p>{% endif %}
                                 {% for game in games.upcoming_games %}
-                                    <div class="row">
-                                        <div class="col">{{ game.date }}</div>
+                                    <div class="row pt-3">
+                                        <div class="col text-center">{{ game.date|date:"D, M d, h:i A" }}</div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
-                                               class="removeLinkUnderline">{{ game.home_team.name }}</a>
+                                    <div class="row align-items-center pb-3">
+                                        <div class="col-4 ps-0">
+                                            <div class="row align-items-center justify-content-end">
+                                                <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
+                                                    <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
+                                                       class="removeLinkUnderline">{{ game.away_team.name }}</a>
+                                                </div>
+                                                <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
+                                                    <img src="{{ game.away_team.logo }}"
+                                                         alt="Away Team Logo"
+                                                         width="50px"
+                                                         height="50px"/>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col">
-                                            <img src="{{ game.home_team.logo }}"
-                                                 alt="Home Team Logo"
-                                                 width="50%"
-                                                 height="50%"/>
+                                        <div class="col-4 ps-0 pe-0 text-center">
+                                            <div class="row">
+                                                <div class="col ps-0 pe-0">at</div>
+                                            </div>
                                         </div>
-                                        <div class="col">vs.</div>
-                                        <div class="col">
-                                            <img src="{{ game.away_team.logo }}"
-                                                 alt="Away Team Logo"
-                                                 width="50%"
-                                                 height="50%"/>
-                                        </div>
-                                        <div class="col">
-                                            <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
-                                               class="removeLinkUnderline">{{ game.away_team.name }}</a>
+                                        <div class="col-4">
+                                            <div class="row align-items-center">
+                                                <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
+                                                    <img src="{{ game.home_team.logo }}"
+                                                         alt="Home Team Logo"
+                                                         width="50px"
+                                                         height="50px"/>
+                                                </div>
+                                                <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
+                                                    <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
+                                                       class="removeLinkUnderline">{{ game.home_team.name }}</a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+                                    <hr class="dropdown-divider" />
                                 {% endfor %}
                             </div>
                         </div>
@@ -181,7 +194,7 @@
                                     <div class="col-1">Pct</div>
                                 </div>
                                 {% for team in standings %}
-                                    <div class="row pb-2 align-items-center">
+                                    <div class="row pb-0 align-items-center">
                                         <div class="col-2 col-md-1 col-lg-2 pe-0 text-md-center text-lg-start ps-4 ps-md-1 ps-lg-4">
                                             {{ team.rank }}
                                         </div>
@@ -203,6 +216,7 @@
                                             {{ team.win_pct }}
                                         </div>
                                     </div>
+                                    <hr class="dropdown-divider"/>
                                 {% endfor %}
                             </div>
                         </div>
