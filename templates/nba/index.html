@@ -3,7 +3,8 @@
     <head>
         {% include "bootstrap.html" %}
         {% load static %}
-        <meta charset="utf-8" http-equiv="refresh" content="60" />
+        {% load extras %}
+        {% comment %} <meta charset="utf-8" http-equiv="refresh" content="60" /> {% endcomment %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
         <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
@@ -34,81 +35,108 @@
                 </h1>
             </div>
             <br />
-            {% if live_games == None %}
-                <div class="container mt-3">
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <div class="container mb-5 mt-3 ps-0">
-                                <h2>Live Games</h2>
+            <div class="container mt-3">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="container mb-5 ps-0 pe-0">
+                            <h2>Live Games</h2>
+                            {% if live_games == None %}
                                 <p>No games in progress</p>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="container mt-3 ps-0">
-                                <h2>Popular Articles</h2>
-                                {% for article in articles %}
-                                    <ul class="ps-0">
-                                        <h5>{{ article.title }}</h5>
-                                        <img src="{{ article.thumbnail }}"
-                                             alt="article thumbnail"
-                                             width="50%"
-                                             height="50%"/>
-                                        <p class="description">{{ article.description }}</p>
-                                        <a class="description"
-                                           href="{{ article.url }}"
-                                           target="_blank"
-                                           rel="noopener noreferrer">Go
-                                        to article</a>
-                                    </ul>
+                            {% else %}
+                                {% for game in live_games %}
+                                    <div class="row pb-3 justify-content-center">
+                                        <div class="col-auto ps-3 pe-3 text-center">
+                                            Q{{ game.quarter }} - {{ game.clock }}
+                                            <div class="col-12">
+                                                <div class="loader"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                        <div class="col-4 ps-0">
+                                            <div class="row align-items-center justify-content-end">
+                                                <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
+                                                    {% if game.home_team_points > game.away_team_points %}
+                                                        <strong>
+                                                            <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
+                                                               class="removeLinkUnderline">{{ game.home_team.name }}</a>
+                                                        </strong>
+                                                    {% else %}
+                                                        <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
+                                                           class="removeLinkUnderline">{{ game.home_team.name }}</a>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
+                                                    <img src="{{ game.home_team.logo }}"
+                                                         alt="Home Team Logo"
+                                                         width="50px"
+                                                         height="50px"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 ps-0 pe-0 text-center">
+                                            <div class="row">
+                                                <div class="col-4 ps-0 pe-0">
+                                                    <h5 class="text-center text-md-end text-lg-center">{{ game.home_team_points }}</h5>
+                                                </div>
+                                                <div class="col-4">
+                                                    <h5 class="text-center">-</h5>
+                                                </div>
+                                                <div class="col-4 ps-0 pe-0">
+                                                    <h5 class="text-center text-md-end text-lg-center">{{ game.away_team_points }}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="row align-items-center">
+                                                <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
+                                                    <img src="{{ game.away_team.logo }}"
+                                                         alt="Away Team Logo"
+                                                         width="50px"
+                                                         height="50px"/>
+                                                </div>
+                                                <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
+                                                    {% if game.home_team_points < game.away_team_points %}
+                                                        <strong>
+                                                            <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
+                                                               class="removeLinkUnderline">
+                                                            {{ game.away_team.name }}</a>
+                                                        </strong>
+                                                    {% else %}
+                                                        <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
+                                                           class="removeLinkUnderline">
+                                                        {{ game.away_team.name }}</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="dropdown-divider" />
                                 {% endfor %}
-                            </div>
+                            {% endif %}
                         </div>
                     </div>
-                {% else %}
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <h2>Live Games</h2>
-                            {% for game in live_games %}
-                                Quarter {{ game.quarter }}:
-                                <div class="spinner-grow spinner-grow-sm text-danger" role="status">
-                                    <span class="visually-hidden"></span>
-                                </div>
-                                {% comment %} <a href="{% url 'nba-team-page' team.formatted_name %}"></a> {% endcomment %}
-                                {{ game.home_team.name }}
-                                <img src="{{ game.home_team.logo }}"
-                                     alt="Home Team Logo"
-                                     width="50%"
-                                     height="50%"/>
-                                {{ game.home_team_points }}
-                                -
-                                {{ game.away_team_points }}
-                                <img src="{{ game.away_team.logo }}"
-                                     alt="Away Team Logo"
-                                     width="50%"
-                                     height="50%"/>
-                                {{ game.away_team.name }}
-                            {% endfor %}
-                        </div>
-                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                    <div class="col-12 col-lg-6">
+                        <div class="container mt-3 ps-0">
                             <h2>Popular Articles</h2>
                             {% for article in articles %}
                                 <ul class="ps-0">
                                     <h5>{{ article.title }}</h5>
                                     <img src="{{ article.thumbnail }}"
-                                         alt="Article Thumbnail"
+                                         alt="article thumbnail"
                                          width="50%"
                                          height="50%"/>
                                     <p class="description">{{ article.description }}</p>
                                     <a class="description"
                                        href="{{ article.url }}"
                                        target="_blank"
-                                       rel="noopener noreferrer">Go to
-                                    article</a>
+                                       rel="noopener noreferrer">Go
+                                    to article</a>
                                 </ul>
                             {% endfor %}
                         </div>
                     </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </body>

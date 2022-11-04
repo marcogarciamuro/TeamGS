@@ -280,6 +280,7 @@ def hasLeagueSeasonEnded(leagueID):
 
 
 def get_articles_fromAPI(search_term, num_articles):
+    print("GETTING ARTICLES FROM API")
     user_agent = {'User-agent': 'Mozilla/5.0'}
     articles = []
     conn = http.client.HTTPSConnection("newsapi.org")

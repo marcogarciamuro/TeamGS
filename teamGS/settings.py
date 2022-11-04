@@ -97,8 +97,12 @@ WSGI_APPLICATION = 'teamGS.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'teamgs_db',
+        'USER': 'marcogarciamuro',
+        'PASSWORD': "Ngvj4Ju+=Vc<'c=`",
+        'HOST': '34.127.112.62',
+        'POST': 5432
     }
 }
 
