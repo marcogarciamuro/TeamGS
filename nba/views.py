@@ -30,10 +30,6 @@ west_conference = [40, 31, 30, 29, 28, 25, 23, 22, 19, 17, 16, 14, 11, 9, 8]
 
 cur_date = date.today()
 cur_datetime = datetime.now().replace(tzinfo=timezone(offset=timedelta()))
-# cur_datetime_utc = cur_datetime.replace(tzinfo=utc_zone)
-# cur_datetime_pst = cur_datetime_utc.astimezone(pst_zone)
-print("YP:", cur_datetime.tzinfo)
-# date_obj_cleaned = date_obj_pst.strftime('%a %b, %d %I:%M %p')
 cur_season = str(cur_date.year)
 
 
@@ -48,59 +44,18 @@ def team_not_found(request):
 
 def index(request):
     search_form = TeamSearch()
-    live_games = getLiveGames()
+    live_games = get_live_games()
     articles = get_articles("nba")
 
-    user_is_signed_in = not request.user.is_anonymous
-    if user_is_signed_in:
-        liked_nba_teams = getLikedNBATeams(request.user)
-        liked_soccer_teams = getLikedSoccerTeams(request.user)
-    else:
-        liked_nba_teams = []
-        liked_soccer_teams = []
     page_data = {
         "articles": articles,
         "search_form": search_form,
         "live_games": live_games,
-        "liked_nba_teams": liked_nba_teams,
-        "liked_soccer_teams": liked_soccer_teams
     }
     return render(request, 'nba/index.html', page_data)
 
 
-def getLikedSoccerTeams(user):
-    liked_teams = SoccerTeam.new_manager.filter(liked_by=user)
-    liked_team_names = []
-    for team in liked_teams:
-        print(team.name)
-        liked_team_names.append(team.name)
-    liked_teams = []
-    for team_name in liked_team_names:
-        team = {
-            "name": team_name,
-            "formatted_name": team_name.replace(" ", "-")
-        }
-        liked_teams.append(team)
-    return liked_teams
-
-
-def getLikedNBATeams(user):
-    liked_teams = Team.new_manager.filter(liked_by=user)
-    liked_team_names = []
-    for team in liked_teams:
-        print(team.name)
-        liked_team_names.append(team.name)
-    liked_teams = []
-    for team_name in liked_team_names:
-        team = {
-            "name": team_name,
-            "formatted_name": team_name.replace(" ", "-")
-        }
-        liked_teams.append(team)
-    return liked_teams
-
-
-def getLiveGames():
+def get_live_games():
     print("IN LIVE GAMES")
     conn = http.client.HTTPSConnection("api-nba-v1.p.rapidapi.com")
     endpoint = "/games?live=all"
@@ -137,7 +92,6 @@ def getLiveGames():
         day = int(game_date[8:10])
         month = int(game_date[5:7])
         year = int(game_date[0:4])
-        date_obj = datetime(year, month, day, hour, minute, second)
 
         try:
             home_team = Team.objects.get(teamID=home_team_id)
@@ -199,9 +153,6 @@ def team_page(request, team_name=None):
             team = Team.objects.get(name__icontains=team_name)
         except:
             team = get_team(team_name)
-
-        print(team.last_updated.tzinfo)
-        print(cur_datetime.tzinfo)
 
         games_are_outdated = cur_datetime >= team.last_updated + \
             timedelta(days=1)
@@ -390,7 +341,6 @@ def get_games_from_api(teamObj):
             year, month, day, hour, minute, second)
         date_obj_utc = date_obj_utc.replace(tzinfo=utc_zone)
         date_obj_pst = date_obj_utc.astimezone(pst_zone)
-        date_obj_cleaned = date_obj_pst.strftime('%a %b, %d %I:%M %p')
         try:
             Game.objects.create(game_id=game_id,
                                 home_team=home_team, away_team=away_team,
@@ -400,7 +350,6 @@ def get_games_from_api(teamObj):
         except:
             # Game object already exists and was created by the opposite team Obj
             pass
-        gameObj = Game.objects.get(game_id=game_id)
 
         game_list.append({
             "id": game_id,
@@ -472,7 +421,6 @@ def get_games_from_api(teamObj):
 
             if(len(previous_games) < 5):
                 previous_games.append(game)
-                # previous_games.append(Game.objects.get(game_id=game["id"]))
 
     if no_immediate_scheduled_games == True or eliminated == True or teamHasUpcomingGames == False:
         upcoming_games = None
@@ -491,10 +439,10 @@ def get_games_from_api(teamObj):
 
 def get_articles(team):
     if team == "nba":
-        articles = get_articles_from_API("nba")
+        articles = get_articles_from_api("nba")
     else:
         # uncomment to get articles from DB
-        articles = get_articles_from_API(team)
+        articles = get_articles_from_api(team)
     return articles
 
 # Solution to remove HTML tags from descriptions of NBA articles:
@@ -504,12 +452,12 @@ def get_articles(team):
 CLEANR = re.compile('<.*?>')
 
 
-def cleanHTML(raw_html):
+def clean_html(raw_html):
     cleanText = re.sub(CLEANR, '', raw_html)
     return cleanText
 
 
-def get_articles_from_API(team):
+def get_articles_from_api(team):
     print("Getting articles from API")
     if type(team) is Team:
         team_name = team.name.replace(" ", "+")
@@ -541,7 +489,7 @@ def get_articles_from_API(team):
             author = ""
         description = article["description"]
         if description:
-            description = cleanHTML(description)
+            description = clean_html(description)
         else:
             description = ""
         thumbnail = article["urlToImage"]
@@ -563,15 +511,11 @@ def get_articles_from_API(team):
             "thumbnail": thumbnail,
             "url": url
         })
-    print("BEFORE SORT")
 
     article_list.sort(key=lambda x: x['date'])
-    print("AFTER SORT")
-
-    # for i in range(5):
 
     for article in article_list:
-        if len(articles) < 7:
+        if len(articles) < 6:
             title = article["title"]
             author = article["author"]
             if author is None:
@@ -589,12 +533,11 @@ def get_articles_from_API(team):
                 "url": url
             }
             articles.append(article)
-    print("AFTER creating article dict")
     return reversed(articles)
 
 
 @login_required(login_url='/login')
-def toggleTeamLike(request):
+def toggle_team_like(request):
     liked = request.GET.get('liked') == 'true'
     teamID = request.GET.get('teamID', False)
     team = Team.objects.get(teamID=teamID)

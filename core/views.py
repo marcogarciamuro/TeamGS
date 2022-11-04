@@ -10,18 +10,7 @@ from django.core import serializers
 
 
 def about(request):
-    user_is_signed_in = not request.user.is_anonymous
-    if user_is_signed_in:
-        liked_soccer_teams = getLikedSoccerTeams(request.user)
-        liked_nba_teams = getLikedNBATeams(request.user)
-    else:
-        liked_soccer_teams = []
-        liked_nba_teams = []
-    page_data = {
-        "liked_soccer_teams": liked_soccer_teams,
-        "liked_nba_teams": liked_nba_teams
-    }
-    return render(request, "core/about.html", page_data)
+    return render(request, "core/about.html")
 
 
 def getLikedTeams(request):
@@ -39,38 +28,6 @@ def getLikedTeams(request):
         })
     except Exception as e:
         return JsonResponse({"success": False})
-
-
-def getLikedNBATeams(user):
-    liked_teams = NBATeam.new_manager.filter(liked_by=user)
-    liked_team_names = []
-    for team in liked_teams:
-        print(team.name)
-        liked_team_names.append(team.name)
-    liked_teams = []
-    for team_name in liked_team_names:
-        team = {
-            "name": team_name,
-            "formatted_name": team_name.replace(" ", "-")
-        }
-        liked_teams.append(team)
-    return liked_teams
-
-
-def getLikedSoccerTeams(user):
-    liked_teams = SoccerTeam.new_manager.filter(liked_by=user)
-    liked_team_names = []
-    for team in liked_teams:
-        print(team.name)
-        liked_team_names.append(team.name)
-    liked_teams = []
-    for team_name in liked_team_names:
-        team = {
-            "name": team_name,
-            "formatted_name": team_name.replace(" ", "-")
-        }
-        liked_teams.append(team)
-    return liked_teams
 
 
 def join(request):
@@ -125,18 +82,7 @@ def user_login(request):
 
 
 def index(request):
-    user_is_signed_in = not request.user.is_anonymous
-    if user_is_signed_in:
-        liked_soccer_teams = getLikedSoccerTeams(request.user)
-        liked_nba_teams = getLikedNBATeams(request.user)
-    else:
-        liked_soccer_teams = []
-        liked_nba_teams = []
-    page_data = {
-        "liked_soccer_teams": liked_soccer_teams,
-        "liked_nba_teams": liked_nba_teams
-    }
-    return render(request, 'core/index.html', page_data)
+    return render(request, 'core/index.html')
 
 
 def user_logout(request):
