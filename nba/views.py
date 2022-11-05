@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
 from nba.models import Team, Game, Article, Conference
-from soccer.models import Team as SoccerTeam
 from soccer.forms import TeamSearch
 from django.contrib.auth.decorators import login_required
 import http.client

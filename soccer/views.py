@@ -3,7 +3,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from soccer.models import Team, Article
 from soccer.forms import TeamSearch
 from nba.models import Team as NBATeam
-from nba.views import getLikedNBATeams
 from django.contrib.auth.decorators import login_required
 import http.client
 import json

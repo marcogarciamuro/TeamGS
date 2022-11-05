@@ -49,7 +49,7 @@ urlpatterns = [
     path('nba/', nba_views.index, name="nba-index"),
     path('soccer/team-not-found/', nba_views.team_not_found),
     path('nba/team-page/toggle-like/',
-         nba_views.toggleTeamLike, name="nba-toggle-like"),
+         nba_views.toggle_team_like, name="nba-toggle-like"),
     path('soccer/chat/<str:room_name>/',
          soccer_views.room, name="soccer-chat-room"),
     path('nba/chat/<str:room_name>/', nba_views.room, name="nba-chat-room"),
