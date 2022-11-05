@@ -38,8 +38,9 @@
                         {{ team.name }}
                         <button id="toggle-team-like-button"
                                 title="{% if team_is_liked %} Unlike Team {% else %} Like Team {% endif %}"
-                                type="submit"
-                                class="{% if team_is_liked %} fa-solid fa-star {% else %} fa-regular fa-star {% endif %}">
+                                type="submit">
+                            <i class="{% if team_is_liked %} fa-solid fa-star {% else %} fa-regular fa-star {% endif %}">
+                            </i>
                         </button>
                     </h1>
                 </span>
