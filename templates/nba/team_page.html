@@ -39,12 +39,15 @@
                         <div class="row">
                             <div class="col-auto">{{ team.name }}</div>
                             <div class="col-auto ps-0">
-                                <button id="toggle-team-like-button"
-                                        title="{% if team_is_liked %} Unlike Team {% else %} Like Team {% endif %}"
-                                        type="submit">
-                                    <i class="{% if team_is_liked %} fa-solid fa-star {% else %} fa-regular fa-star {% endif %}">
-                                    </i>
-                                </button>
+                                {% if team_is_liked %}
+                                    <button id="toggle-team-like-button"
+                                            title="Unlike Team"
+                                            class="fa-solid fa-star"></button>
+                                {% else %}
+                                    <button id="toggle-team-like-button"
+                                            title="Like Team"
+                                            class="fa-regular fa-star"></button>
+                                {% endif %}
                             </div>
                         </div>
                     </h1>
@@ -192,11 +195,15 @@
                                     <div class="col-4 col-md-5 me-2 me-sm-0 ps-md-3 ps-1 ps-lg-0">Team</div>
                                     <div class="col-1 offset-2 offset-sm-3 offset-lg-2">W</div>
                                     <div class="col-1">L</div>
-                                    <div class="col-1">Pct</div>
+                                    <div class="col-1">
+                                        Pct
+                                    </div>
                                 </div>
                                 {% for team in standings %}
                                     <div class="row pb-0 align-items-center">
-                                        <div class="col-2 col-md-1 col-lg-2 pe-0 text-md-center text-lg-start ps-4 ps-md-1 ps-lg-4">{{ team.rank }}</div>
+                                        <div class="col-2 col-md-1 col-lg-2 pe-0 text-md-center text-lg-start ps-4 ps-md-1 ps-lg-4">
+                                            {{ team.rank }}
+                                        </div>
                                         <div class="col-1 col-md-1 ps-0 pe-0 me-2 me-sm-0 ps-md-3 ps-lg-0">
                                             <img src="{{ team.logo }}" alt="Team Logo" width="50px" height="50px"/>
                                         </div>
