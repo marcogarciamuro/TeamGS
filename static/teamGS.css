@@ -145,27 +145,3 @@ html, body {
     max-width: 75%;
     max-height: 75%;
 }
-
-.loader {
-    height: 2px;
-    -webkit-animation: slide 2s ease-in-out infinite;
-    animation: slide 2s ease-in-out infinite;
-    background-color: red;
-    animation-direction: alternate;
-}
-
-@keyframes slide {
-    from {
-        margin-left: 0%;
-        width: 0%;
-    }
-    
-    50% {
-        width: 30%;
-    }
-    
-    to {
-        margin-left: 100%;
-        width: 0%;
-    }
-}
