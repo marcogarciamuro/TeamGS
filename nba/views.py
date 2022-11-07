@@ -99,6 +99,8 @@ def get_live_games():
             home_team_logo = game["teams"]["home"]["logo"]
             home_team = create_team(
                 home_team_name, home_team_id, home_team_logo)
+            if not home_team:
+                continue
 
         try:
             away_team = Team.objects.get(teamID=away_team_id)
@@ -107,6 +109,8 @@ def get_live_games():
             away_team_logo = game["teams"]["visitors"]["logo"]
             away_team = create_team(
                 away_team_name, away_team_id, away_team_logo)
+            if not away_team:
+                continue
 
         away_team_points = game["scores"]["visitors"]["points"]
         home_team_points = game["scores"]["home"]["points"]
@@ -273,7 +277,12 @@ def get_cached_games(teamObj):
 
 
 def create_team(team_name, team_id, team_logo):
-    team_conference_region = "East" if team_id in east_conference else "West"
+    if team_id in east_conference:
+        team_conference_region = "East"
+    elif team_id in west_conference:
+        team_conference_region = "West"
+    else:
+        return None
     try:
         team_conference = Conference.objects.get(region=team_conference_region)
     except:
@@ -315,6 +324,8 @@ def get_games_from_api(teamObj):
             home_team_logo = game["teams"]["home"]["logo"]
             home_team = create_team(
                 home_team_name, home_team_id, home_team_logo)
+            if not home_team:
+                continue
 
         # get away team object
         away_team_name = game["teams"]["visitors"]["name"]
@@ -325,6 +336,8 @@ def get_games_from_api(teamObj):
             away_team_logo = game["teams"]["visitors"]["logo"]
             away_team = create_team(
                 away_team_name, away_team_id, away_team_logo)
+            if not away_team:
+                continue
 
         home_team_points = game["scores"]["home"]["points"]
         away_team_points = game["scores"]["visitors"]["points"]
