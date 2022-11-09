@@ -14,10 +14,6 @@
         <title>Chat Room</title>
     </head>
     <body>
-        {% if user.is_authenticated %}
-            {% get_liked_soccer_teams user.username as liked_soccer_teams %}
-            {% get_liked_nba_teams user.username as liked_nba_teams %}
-        {% endif %}
         {% include "navigation.html" %}
         {% now "SHORT_DATETIME_FORMAT" as message_date_time %}
         <div class="container">
