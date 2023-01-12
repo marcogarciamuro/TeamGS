@@ -10,3 +10,4 @@ daphne
 gunicorn==20.0.4
 psycopg2==2.8.4
 django-autocomplete-light
+Unidecode
