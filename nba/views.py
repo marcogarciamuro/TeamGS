@@ -1,17 +1,18 @@
-from curses.ascii import CR
 from dateutil import tz
-from django import conf
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseRedirect
 from django.db.models import Q
-from nba.models import Team, Game, Article, Conference
-from soccer.forms import TeamSearch
+from nba.models import Team, Game, Conference, Player, TeamArticle, NBAArticle
+from nba.forms import TeamSearch
 from django.contrib.auth.decorators import login_required
 import http.client
 import re
 import json
 import environ
-from datetime import datetime, date, timedelta, timezone
+from datetime import datetime, date, timedelta
+from dal import autocomplete
+from django.utils.html import format_html
+from django.utils import timezone
 
 env = environ.Env()
 environ.Env.read_env()
@@ -19,24 +20,25 @@ environ.Env.read_env()
 utc_zone = tz.tzutc()
 pst_zone = tz.tzlocal()
 
-headers = {
+NBA_API_HEADERS = {
     'x-rapidapi-host': "api-nba-v1.p.rapidapi.com",
     'x-rapidapi-key': env('NBA_API_KEY')
 }
 
-east_conference = [41, 38, 27, 26, 24, 21, 20, 15, 10, 7, 6, 5, 4, 2, 1]
-west_conference = [40, 31, 30, 29, 28, 25, 23, 22, 19, 17, 16, 14, 11, 9, 8]
+NEWS_API_HEADERS = {
+    'User-agent': 'Mozilla/5.0'
+}
+
+EAST_CONFERENCE = [41, 38, 27, 26, 24, 21, 20, 15, 10, 7, 6, 5, 4, 2, 1]
+WEST_CONFERENCE = [40, 31, 30, 29, 28, 25, 23, 22, 19, 17, 16, 14, 11, 9, 8]
 
 cur_date = date.today()
-cur_datetime = datetime.now().replace(tzinfo=timezone(offset=timedelta()))
-cur_season = str(cur_date.year)
+cur_datetime = timezone.now()
+# cur_season = str(cur_date.year)
+cur_season = 2022
 
 
 # Create your views here.
-def ajax_change_team_like_status(request):
-    liked = request.GET.get('liked')
-
-
 def team_not_found(request):
     return render(request, "nba/team-not-found.html")
 
@@ -44,7 +46,7 @@ def team_not_found(request):
 def index(request):
     search_form = TeamSearch()
     live_games = get_live_games()
-    articles = get_articles("nba")
+    articles = get_articles()
 
     page_data = {
         "articles": articles,
@@ -54,19 +56,24 @@ def index(request):
     return render(request, 'nba/index.html', page_data)
 
 
+def call_api(endpoint):
+    conn = http.client.HTTPSConnection('api-nba-v1.p.rapidapi.com')
+    conn.request('GET', endpoint, headers=NBA_API_HEADERS)
+    res = conn.getresponse()  # Get response from server
+    data = res.read()
+    json_dict = json.loads(data)
+    results = json_dict['results']
+    if results == 0:
+        return None
+    return json_dict['response']
+
+
 def get_live_games():
     print("IN LIVE GAMES")
-    conn = http.client.HTTPSConnection("api-nba-v1.p.rapidapi.com")
     endpoint = "/games?live=all"
-    conn.request("GET", endpoint, headers=headers)
-    conn_res = conn.getresponse()  # Get response from server
-    data = conn_res.read()  # Reads and returns the response body
-    response = json.loads(data)
-    num_results = response["results"]
-    if num_results == 0:
+    games = call_api(endpoint)
+    if not games:
         return None
-
-    games = response["response"]
     live_games = []
     for game in games:
         if game["league"] != "standard":
@@ -130,6 +137,23 @@ def get_live_games():
     return live_games
 
 
+def get_games(team):
+    games_are_outdated = cur_datetime >= team.last_updated + \
+        timedelta(days=1)
+    team_is_new = team.last_updated == team.created_on
+
+    # if team is new (has no cached games) or team is in DB and games are outdated:
+    if games_are_outdated or team_is_new:
+        print("GETTING GAMES FROM API")
+        games = get_games_from_api(team)
+
+    # if team is in DB and games are current:
+    else:
+        print("GETTING GAMES FROM CACHE")
+        games = get_cached_games(team)
+    return games
+
+
 def team_page(request, team_name=None):
     user_is_signed_in = not request.user.is_anonymous
     search_form = TeamSearch()
@@ -137,14 +161,12 @@ def team_page(request, team_name=None):
         search_form = TeamSearch(request.POST)
         if(search_form.is_valid()):  # process form data which is the searched team name
             team_search = search_form.cleaned_data["team_query"]
-            team_name = team_search
-            team = get_team(team_name)
+            team = get_team(team_search)
             if team is None:
                 print("TEAM NOT FOUND")
                 return render(request, "nba/team_not_found.html")
 
-            team_name = team.name
-            formatted_team_name = team_name.replace(" ", "-")
+            formatted_team_name = team.name.replace(" ", "-")
             team_page = "/nba/team-page/" + formatted_team_name
             return HttpResponseRedirect(team_page)
     else:
@@ -152,33 +174,14 @@ def team_page(request, team_name=None):
         team_name = team_name.replace("-", " ")
 
         # Get and or create team object
-        try:
-            team = Team.objects.get(name__icontains=team_name)
-        except:
-            team = get_team(team_name)
-
-        games_are_outdated = cur_datetime >= team.last_updated + \
-            timedelta(days=1)
-        new_team = team.last_updated == team.created_on
-
-        # if team is new (has no cached games) or team is in DB and games are outdated:
-        if games_are_outdated or new_team:
-            print("GETTING GAMES FROM API")
-            games = get_games_from_api(team)
-
-        # if team is in DB and games are current:
-        else:
-            print("GETTING GAMES FROM CACHE")
-            games = get_cached_games(team)
-
+        team = get_team(team_name)
+        games = get_games(team)
         standings = get_standings(team)
         articles = get_articles(team)
+        players = get_players(team)
 
         if user_is_signed_in:
-            if team.liked_by.filter(id=request.user.id).exists():
-                team_is_liked = True
-            else:
-                team_is_liked = False
+            team_is_liked = team.liked_by.filter(id=request.user.id).exists()
         else:
             team_is_liked = False
 
@@ -190,30 +193,81 @@ def team_page(request, team_name=None):
             "games": games,
             "articles": articles,
             "standings": standings,
+            "players": players,
         }
         return render(request, "nba/team_page.html", page_data)
 
 
+class team_autocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Team.objects.all()
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+        return qs
+
+    def get_result_label(self, item):
+        print(item)
+        return format_html('<span><img src="{}" width="20px" height="20px"> {}</span>', item.logo, item.name)
+
+    def get_selected_result_label(self, item):
+        return format_html('{}', item.name)
+
+
+def get_players(team_obj):
+    print("GETTING PLAYERS")
+    if Player.objects.filter(team=team_obj).exists():
+        players = Player.objects.filter(team=team_obj)
+        print("FOUND CACHED PLAYERS")
+        return players
+    else:
+        # Fetch players from api
+        print("NO CACHED PLAYERS, FETCHING FROM API")
+        endpoint = "/players?team=" + \
+            str(team_obj.teamID) + "&season=" + str(cur_season)
+        player_list = call_api(endpoint)
+        if not player_list:
+            return None
+        for player in player_list:
+            if player['birth']['date']:
+                player_birthdate = datetime.strptime(
+                    player['birth']['date'], '%Y-%m-%d')
+                age = get_player_age(player_birthdate)
+            else:
+                age = None
+            Player.objects.create(
+                player_id=player['id'],
+                firstname=player['firstname'],
+                lastname=player['lastname'],
+                team=team_obj,
+                age=age,
+                height_feet=player['height']['feets'],
+                height_inches=player['height']['inches'],
+                weight=player['weight']['pounds'],
+                jersey_number=player['leagues']['standard']['jersey'],
+                position=player['leagues']['standard']['pos']
+            )
+        players = Player.objects.filter(team=team_obj)
+        return players
+
+
+def get_player_age(player_birthdate_obj):
+    age = cur_date.year - player_birthdate_obj.year
+    if player_birthdate_obj.month > cur_date.month or (player_birthdate_obj.month == cur_date.month and player_birthdate_obj.day < cur_date.day):
+        age -= 1
+    return age
+
+
+# Get team object from DB or from API
 def get_team(team_name):
     print("looking for team name" + team_name)
-    # check if team searched is currently in DB
-    if Team.objects.filter(name__icontains=team_name).exists():
-        # retreive team
+    try:
         team = Team.objects.get(name__icontains=team_name)
-        return team
-    else:
-        team_search = team_name.replace(" ", "%20")
-        conn = http.client.HTTPSConnection("api-nba-v1.p.rapidapi.com")
-        endpoint = "/teams?search=" + team_search
-        conn.request("GET", endpoint, headers=headers)
-        res = conn.getresponse()
-        data = res.read()
-        result_dict = json.loads(data)
-        results = result_dict['results']
-        if results == 0:
+    except:
+        endpoint = "/teams?search=" + team_name.replace(" ", "%20")
+        team_results = call_api(endpoint)
+        if not team_results:
             return None
-        payload = result_dict['response']
-        team_info = payload[0]
+        team_info = team_results[0]
         team_id = team_info['id']
         team_name = team_info['name']
         team_logo = team_info['logo']
@@ -227,21 +281,13 @@ def get_team(team_name):
                             last_updated=cur_datetime, created_on=cur_datetime
                             )
         team = Team.objects.get(teamID=team_id)
-        return team
+    return team
 
 
-def get_standings(teamObj):
-    team_conference = teamObj.conference
-    conn = http.client.HTTPSConnection("api-nba-v1.p.rapidapi.com")
+def get_standings(team_obj):
     endpoint = "/standings?league=standard&season=" + \
-        cur_season + "&conference=" + team_conference.region
-    conn.request("GET", endpoint, headers=headers)
-    res = conn.getresponse()  # Get response from server
-    data = res.read()  # Reads and returns the response body
-
-    # convert JSON format to Python dictionary
-    api_response = json.loads(data)
-    standings = api_response["response"]
+        str(cur_season) + "&conference=" + team_obj.conference.region
+    standings = call_api(endpoint)
     for position in standings:
         team_info = position["team"]
         team_id = team_info["id"]
@@ -249,7 +295,7 @@ def get_standings(teamObj):
             team = Team.objects.get(teamID=team_id)
         except:
             Team.objects.create(name=team_info["name"],
-                                teamID=team_id, logo=team_info["logo"], conference=team_conference,
+                                teamID=team_id, logo=team_info["logo"], conference=team_obj.conference,
                                 last_updated=cur_datetime, created_on=cur_datetime
                                 )
             team = Team.objects.get(teamID=team_id)
@@ -260,8 +306,20 @@ def get_standings(teamObj):
         team.losses = position["loss"]["total"]
         team.save()
     standings = Team.objects.filter(
-        conference=team_conference).order_by("rank")
+        conference=team_obj.conference).order_by("rank")
     return standings
+
+
+def update_game_score(game_id):
+    print("FIXING GAME SCORE")
+    endpoint = "/games?id=" + str(game_id)
+    game_stats = call_api(endpoint)[0]
+    home_team_points = game_stats['scores']['home']['points']
+    away_team_points = game_stats['scores']['visitors']['points']
+    game_obj_to_fix = Game.objects.get(game_id=game_id)
+    game_obj_to_fix.home_team_points = home_team_points
+    game_obj_to_fix.away_team_points = away_team_points
+    game_obj_to_fix.save()
 
 
 def get_cached_games(teamObj):
@@ -269,6 +327,10 @@ def get_cached_games(teamObj):
                                               | Q(away_team=teamObj, date__lte=cur_date)).order_by('-date')[:5]
     upcoming_three_games = Game.objects.filter(Q(home_team=teamObj, date__gte=cur_date)
                                                | Q(away_team=teamObj, date__gte=cur_date)).order_by('date')[:3]
+    for game in previous_five_games:
+        if not game.home_team_points or not game.away_team_points:
+            update_game_score(game.game_id)
+            game = Game.objects.filter(game_id=game.game_id)
     games = {
         "previous_games": reversed(previous_five_games),
         "upcoming_games": upcoming_three_games
@@ -277,9 +339,9 @@ def get_cached_games(teamObj):
 
 
 def create_team(team_name, team_id, team_logo):
-    if team_id in east_conference:
+    if team_id in EAST_CONFERENCE:
         team_conference_region = "East"
-    elif team_id in west_conference:
+    elif team_id in WEST_CONFERENCE:
         team_conference_region = "West"
     else:
         return None
@@ -295,20 +357,15 @@ def create_team(team_name, team_id, team_logo):
     return Team.objects.get(teamID=team_id)
 
 
-def get_games_from_api(teamObj):
-    teamObj.last_updated = cur_date
-    teamObj.save()
-    mainTeamName = teamObj.name
-    team_id = str(teamObj.teamID)
-    conn = http.client.HTTPSConnection("api-nba-v1.p.rapidapi.com")
-    endpoint = "/games?season=" + cur_season + "&team=" + team_id
-    conn.request("GET", endpoint, headers=headers)
-    res = conn.getresponse()  # Get response from server
-    data = res.read()  # Reads and returns the response body
-
-    # convert JSON format to Python dictionary
-    api_response = json.loads(data)
-    games = api_response["response"]
+def get_games_from_api(team_obj):
+    team_obj.last_updated = cur_date
+    team_obj.save()
+    main_team_name = team_obj.name
+    endpoint = "/games?season=" + \
+        str(cur_season) + "&team=" + str(team_obj.teamID)
+    games = call_api(endpoint)
+    if not games:
+        return None
     game_list = []
     print("GOING THRU GAMES")
     for game in games:
@@ -400,9 +457,9 @@ def get_games_from_api(teamObj):
                 winner = game["away_team"].name
 
             # determine current game opponent
-            if game["home_team"].name == mainTeamName:
+            if game["home_team"].name == main_team_name:
                 opponent = game["away_team"].name
-            elif game["away_team"].name == mainTeamName:
+            elif game["away_team"].name == main_team_name:
                 opponent = game["home_team"].name
 
             if previous_opponent == "":
@@ -413,7 +470,7 @@ def get_games_from_api(teamObj):
                 consequtive_matchups += 1
 
                 # check if last game against same opponent was won
-                if winner == mainTeamName:
+                if winner == main_team_name:
                     consequtive_matchup_wins += 1
                 else:
                     consequtive_matchup_losses += 1
@@ -449,18 +506,54 @@ def get_games_from_api(teamObj):
     return games
 
 
-def get_articles(team):
-    if team == "nba":
-        articles = get_articles_from_api("nba")
+def get_articles_from_api(team=None):
+    print("Getting articles from API")
+    key = str(env('NEWS_API_KEY'))
+    if team:
+        players = get_players(team)
+        team_nickname = team.name.split()[-1]
+        q = '"' + team.name.replace(' ', '-') + '" OR "' + team_nickname + '"'
+        for player in players:
+            q += ' OR "' + player.firstname + '-' + player.lastname + '"'
+        q = q.replace(' ', '%20')
+        endpoint = "/v2/everything?sortBy=publishedAt&language=en&q=" + q + \
+            "&apiKey=" + key + '&sources=bleacher-report' + '&searchIn=title'
     else:
-        # uncomment to get articles from DB
+        endpoint = "/v2/everything?sortBy=publishedAt&language=en&q=" + \
+            "nba" + "&apiKey=" + key + '&sources=bleacher-report'
+
+    api_article_results = call_news_api(endpoint)
+    sorted_articles = create_sorted_article_list(api_article_results)
+    print("GOING THRU ARTICLES ")
+    article_obj_list = create_and_get_article_short_list(sorted_articles, team)
+    print("ARTICLES ABOUT TO BE RETURNED ", article_obj_list)
+    return article_obj_list
+
+
+def get_articles(team=None):
+    one_day_ago = timezone.now() - timedelta(days=1)
+    if team:
+        cached_articles = TeamArticle.objects.filter(
+            team=team).order_by('-retrieval_date')
+    else:
+        cached_articles = NBAArticle.objects.filter().order_by("-retrieval_date")
+
+    if cached_articles.exists():
+        print("FOUND CACHED ARTICLES")
+        if cached_articles[0].retrieval_date <= one_day_ago:
+            print("last created article is outdated, fetching new ones")
+            articles = get_articles_from_api(team)
+        else:
+            print("Serving CACHED ARTICLES")
+            articles = cached_articles[:5]
+    else:
+        # No general nba articles exist, fetch new ones
         articles = get_articles_from_api(team)
     return articles
 
+
 # Solution to remove HTML tags from descriptions of NBA articles:
 # https://stackoverflow.com/questions/9662346/python-code-to-remove-html-tags-from-a-string
-
-
 CLEANR = re.compile('<.*?>')
 
 
@@ -469,33 +562,23 @@ def clean_html(raw_html):
     return cleanText
 
 
-def get_articles_from_api(team):
-    print("Getting articles from API")
-    if type(team) is Team:
-        team_name = team.name.replace(" ", "+")
-    else:
-        team_name = team
-    articles = []
+def call_news_api(endpoint):
     conn = http.client.HTTPSConnection("newsapi.org")
-    key = str(env('NEWS_API_KEY'))
-    endpoint = "/v2/everything?sortBy=publishedAt&language=en&q=+" + \
-        team_name + "&apiKey=" + key
-    user_agent = {'User-agent': 'Mozilla/5.0'}
-    conn.request("GET", endpoint, headers=user_agent)
+    conn.request("GET", endpoint, headers=NEWS_API_HEADERS)
     res = conn.getresponse()
     data = res.read()
-    result_dict = json.loads(data)
-    try:
-        article_results = result_dict["articles"]
-    except:
-        return []
-    article_list = []
-    print("GOING THRU ARTICLES ")
+    json_dict = json.loads(data)
+    results = json_dict['totalResults']
+    if results == 0:
+        return None
+    return json_dict['articles']
 
-    for article in article_results:
+
+# Takes articles from api response as argument and returns list of articles sorted by date
+def create_sorted_article_list(unsorted_articles):
+    final_articles = []
+    for article in unsorted_articles:
         title = article["title"]
-        # if team_name.replace("+", " ").split()[-1] not in title:
-        #     continue
         author = article["author"]
         if author is None:
             author = ""
@@ -515,7 +598,7 @@ def get_articles_from_api(team):
         year = int(publishedDate[0:4])
         dateObj = datetime(year, month, day, hour, minute, second)
 
-        article_list.append({
+        final_articles.append({
             "date": dateObj,
             "title": title,
             "author": author,
@@ -524,28 +607,46 @@ def get_articles_from_api(team):
             "url": url
         })
 
-    article_list.sort(key=lambda x: x['date'])
+    final_articles.sort(key=lambda x: x['date'])
+    return final_articles
 
-    for article in article_list:
-        if len(articles) < 6:
-            title = article["title"]
-            author = article["author"]
-            if author is None:
-                author = ""
-            description = article["description"]
-            thumbnail = article["thumbnail"]
-            if thumbnail is None:
-                continue
-            url = article["url"]
-            article = {
-                "title": title,
-                "author": author,
-                "description": description,
-                "thumbnail": thumbnail,
-                "url": url
-            }
-            articles.append(article)
-    return reversed(articles)
+
+def create_and_get_article_short_list(article_item_list, team=None):
+    article_obj_list = []
+    for article in article_item_list:
+        if len(article_obj_list) == 6:
+            break
+        title = article["title"]
+        author = article["author"]
+        if author is None:
+            author = ""
+        description = article["description"]
+        thumbnail = article["thumbnail"]
+        if thumbnail is None:
+            continue
+        url = article["url"]
+        if team and not TeamArticle.objects.filter(title=title).exists():
+            TeamArticle.objects.create(
+                team=team,
+                title=title,
+                author=author,
+                thumbnail=thumbnail,
+                description=description,
+                url=url
+            )
+            article_obj = TeamArticle.objects.get(title=title)
+            article_obj_list.append(article_obj)
+        elif not team and not NBAArticle.objects.filter(title=title).exists():
+            NBAArticle.objects.create(
+                title=title,
+                author=author,
+                thumbnail=thumbnail,
+                description=description,
+                url=url
+            )
+            article_obj = NBAArticle.objects.get(title=title)
+            article_obj_list.append(article_obj)
+    return reversed(article_obj_list)
 
 
 @login_required(login_url='/login')

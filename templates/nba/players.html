@@ -1,0 +1,49 @@
+<div class="container">
+    <div class="row">
+        <div class="col-3 offset-3">NAME</div>
+        <div class="col-1">POS</div>
+        <div class="col-1">AGE</div>
+        <div class="col-1">HT</div>
+        <div class="col-3">WT</div>
+    </div>
+    {% for player in players %}
+        <div class="row">
+            <div class="col-1 offset-2">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="col-3">
+                {% comment %} {{ player.player_id }}  {% endcomment %}
+                {{ player.firstname }} {{ player.lastname }}
+                {% if player.jersey_number %}{{ player.jersey_number }}{% endif %}
+            </div>
+            <div class="col-1">
+                {% if player.position is None %}
+                    -
+                {% else %}
+                    {{ player.position }}
+                {% endif %}
+            </div>
+            <div class="col-1">
+                {% if player.age is None %}
+                    -
+                {% else %}
+                    {{ player.age }}
+                {% endif %}
+            </div>
+            <div class="col-1">
+                {% if player.height_feet is None %}
+                    -
+                {% else %}
+                    {{ player.height_feet }}' {{ player.height_inches }}"
+                {% endif %}
+            </div>
+            <div class="col-3">
+                {% if player.weight is None %}
+                    -
+                {% else %}
+                    {{ player.weight }} lbs
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% include "bootstrap.html" %}
+        {% load static %}
+        {% load extras %}
+        <meta charset="utf-8" http-equiv="refresh" content="60" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
+        <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.rawgit.com/xcash/bootstrap-autocomplete/3de7ad37/dist/latest/bootstrap-autocomplete.js"></script>
+        <script>
+			$(".basicAutoComplete").autoComplete({ minLength: 1 });
+			$(".dropdown-menu").css({ top: "auto", left: "auto" });
+        </script>
+        <meta name="description" content="Sports Website" />
+        <meta name="keywords" content="sports, website, soccer, basketball" />
+        <title>NBA</title>
+    </head>
+    <body>
+        {% include "navigation.html" %}
+        <!--Outer container-->
+        <div class="container">
+            {% include "./index_header.html" %}
+            {% block content %}
+                <div class="container mt-3">
+                    <div class="row">
+                        <div class="col-12 col-lg-6">{% include "./live_games.html" %}</div>
+                        <div class="col-12 col-lg-6">{% include "news.html" %}</div>
+                    </div>
+                </div>
+            {% endblock content %}
+        </div>
+    </body>
+    {% block footer %}
+        <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+        {{ search_form.media }}
+        <script>
+		(function ($) {
+			$("#add-form").click(function () {
+				var index = $("#id_inline_test_models-TOTAL_FORMS").val();
+				var newTable = $("#id_inline_test_models-__prefix__-DELETE")
+					.parents("table")
+					.clone();
+				newTable.find(":input").each(function () {
+					for (attr of ["name", "id"])
+						$(this).attr(
+							attr,
+							$(this).attr(attr).replace("__prefix__", index)
+						);
+				});
+				newTable.insertBefore($(this));
+				$("#id_inline_test_models-TOTAL_FORMS").val(
+					parseInt($("#id_inline_test_models-TOTAL_FORMS").val()) + 1
+				);
+				newTable.slideDown();
+			});
+		})($);
+        </script>
+    {% endblock footer %}
+</html>

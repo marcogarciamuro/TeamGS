@@ -1,0 +1,12 @@
+{% load extras %}
+<div class="container mb-5 mt-3 ps-0">
+    <h2>Live Games</h2>
+    <div id="wg-api-football-livescore"
+         data-host="api-football-v1.p.rapidapi.com"
+         data-refresh="30"
+         data-key="{% get_env_var 'SOCCER_API_KEY' %}"
+         data-theme=""
+         data-show-errors="true"
+         class="api_football_loader football-widget">
+    </div>
+</div>

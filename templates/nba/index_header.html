@@ -1,0 +1,23 @@
+<div class="container pt-4 pb-4">
+    {% block header %}
+        <div class="row justify-content-end pb-3">
+            <div class="col-auto">
+                <div class="input-group">
+                    <form method="post" action="{% url 'nba-team-page' %}">
+                        {% csrf_token %}
+                        {{ search_form }}
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endblock header %}
+    {% block content %}
+        <h1>
+            NBA
+            <i class="fa-solid fa-basketball"></i>
+        </h1>
+    {% endblock content %}
+</div>

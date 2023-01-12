@@ -7,6 +7,7 @@
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script type="module" src="https://widgets.api-sports.io/football/1.1.8/widget.js"></script>
         <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
         <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
         <meta name="description" content="Sports Website" />
@@ -15,68 +16,17 @@
     </head>
     <body>
         {% include "navigation.html" %}
+        {% comment %} Outer Container {% endcomment %}
         <div class="container">
-            <div class="container mt-3">
-                <form method="post" action="{% url 'soccer-team-page' %}">
-                    <div class="row justify-content-end">
-                        <div class="col-auto">
-                            <div class="input-group">
-                                {% csrf_token %}
-                                {{ search_form }}
-                                <button class="btn btn-primary" type="submit" name="team_name">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <h1>
-                    Soccer
-                    <i class="fa-solid fa-futbol"></i>
-                </h1>
-            </div>
-            <br />
-            <div class="container mt-3">
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <div class="col-12">
-                            <div class="container mb-5 mt-3 ps-0">
-                                <h2>Live Games</h2>
-                                <div id="wg-api-football-livescore"
-                                     data-host="api-football-v1.p.rapidapi.com"
-                                     data-refresh="30"
-                                     data-key="{% get_env_var 'SOCCER_API_KEY' %}"
-                                     data-theme=""
-                                     data-show-errors="true"
-                                     class="api_football_loader">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="container mt-3 ps-0">
-                            <h2>Popular Articles</h2>
-                            {% for article in articles %}
-                                <ul class="ps-0">
-                                    <h5>{{ article.title }}</h5>
-                                    <img src="{{ article.thumbnail }}"
-                                         alt="Article Thumbnail"
-                                         width="50%"
-                                         height="50%"/>
-                                    <p class="description">{{ article.description }}</p>
-                                    <a class="description"
-                                       href="{{ article.url }}"
-                                       target="_blank"
-                                       rel="noopener noreferrer">Go
-                                    to article</a>
-                                </ul>
-                                <br />
-                            {% endfor %}
-                        </div>
+            {% include "./index_header.html" %}
+            {% block content %}
+                <div class="container mt-3">
+                    <div class="row">
+                        <div class="col-12 col-md-6">{% include "./live_games.html" %}</div>
+                        <div class="col-12 col-md-6">{% include "news.html" %}</div>
                     </div>
                 </div>
-            </div>
+            {% endblock content %}
         </div>
-        <script type="module" src="https://widgets.api-sports.io/football/1.1.8/widget.js"></script>
     </body>
 </html>

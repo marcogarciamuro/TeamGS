@@ -1,0 +1,35 @@
+<div class="container mt-3">
+    <form method="post" action="{% url 'soccer-team-page' %}" class="mt-3 mb-5">
+        <div class="row justify-content-end">
+            <div class="col-auto">
+                <div class="input-group">
+                    {% csrf_token %}
+                    {{ search_form }}
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-auto">
+            <h1>{{ team.name }}</h1>
+        </div>
+        <div class="col-auto ps-0">
+            <h1>
+                <button id="toggle-team-like-button"
+                        title="{% if team_is_liked %} Unlike Team {% else %} Like Team {% endif %}"
+                        type="submit">
+                    <i id="team-like-icon"
+                       class="{% if team_is_liked %} fa-solid fa-star {% else %} fa-regular fa-star team-like-icon {% endif %}">
+                    </i>
+                </button>
+            </h1>
+        </div>
+    </div>
+    <h3>
+        <a href="{% url 'soccer-chat-room' team_name_formatted %}"
+           class="removeLinkUnderline"> Chat Room <i class="fa-solid fa-comments"></i></a>
+    </h3>
+</div>

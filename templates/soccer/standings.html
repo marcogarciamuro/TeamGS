@@ -1,0 +1,14 @@
+{% load extras %}
+<div class="container mb-5 ps-0">
+    <h2>League Standings</h2>
+    <div id="wg-api-football-standings"
+         data-host="api-football-v1.p.rapidapi.com"
+         data-league="{{ league_id }}"
+         data-team=""
+         data-season="{{ cur_season }}"
+         data-key="{% get_env_var 'SOCCER_API_KEY' %}"
+         data-theme=""
+         data-show-errors="true"
+         class="api_football_loader">
+    </div>
+</div>
