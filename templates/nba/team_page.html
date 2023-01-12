@@ -4,254 +4,70 @@
         {% include "bootstrap.html" %}
         {% load static %}
         {% load extras %}
-        <meta charset="utf-8"/>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
         <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
         <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
-        <meta name="description" content="Sports Website"/>
-        <meta name="keywords" content="sports, website, soccer, basketball"/>
+        <script src="https://cdn.rawgit.com/xcash/bootstrap-autocomplete/3de7ad37/dist/latest/bootstrap-autocomplete.js"></script>
+        <script>
+			$(".basicAutoComplete").autoComplete({ minLength: 1 });
+			$(".dropdown-menu").css({ top: "auto", left: "auto" });
+        </script>
+        <meta name="description" content="Sports Website" />
+        <meta name="keywords" content="sports, website, soccer, basketball" />
         <title>{{ team.name }}</title>
         {% include "toggleNBALike.html" %}
     </head>
     <body>
         {% include "navigation.html" %}
+        <!--Outermost container-->
         <div class="container">
-            <div class="container mt-3">
-                <form method="post" action="{% url 'nba-team-page' %}">
-                    <div class="row justify-content-end">
-                        <div class="col-auto">
-                            <div class="input-group">
-                                {% csrf_token %}
-                                {{ search_form }}
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </div>
+            {% include "./team_header.html" %}
+            {% block content %}
+                <div class="container mt-3">
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-12 col-lg-6">
+                            {% include "./previous_games.html" %}
+                            {% include "./upcoming_games.html" %}
+                            {% include "./standings.html" %}
                         </div>
-                    </div>
-                </form>
-                <br/>
-                <span>
-                    <h1>
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-auto">{{ team.name }}</div>
-                            <div class="col-auto ps-0">
-                                {% if team_is_liked %}
-                                    <button id="toggle-team-like-button"
-                                            title="Unlike Team"
-                                            class="fa-solid fa-star"></button>
-                                {% else %}
-                                    <button id="toggle-team-like-button"
-                                            title="Like Team"
-                                            class="fa-regular fa-star"></button>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </h1>
-                </span>
-                <h3>
-                    <a href="{% url 'nba-chat-room' formatted_team_name %}"
-                       class="removeLinkUnderline">
-                        Chat Room
-                        <i class="fa-solid fa-comments"></i>
-                    </a>
-                </h3>
-            </div>
-            <br/>
-            <div class="container mt-3">
-                <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-12 col-lg-6">
-                        <!-- Previous Games -->
-                        <div class="col-12">
-                            <div class="container mb-5 ps-0 pe-0">
-                                <h2>Previous Games</h2>
-                                {% for game in games.previous_games %}
-                                    <div class="row pt-2">
-                                        <div class="col text-center">{{ game.date|date:"D, M d, h:i A" }}</div>
-                                    </div>
-                                    <div class="row align-items-center pb-2">
-                                        <div class="col-4 ps-0">
-                                            <div class="row align-items-center justify-content-end">
-                                                <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
-                                                    {% if game.home_team_points > game.away_team_points %}
-                                                        <strong>
-                                                            <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
-                                                               class="removeLinkUnderline">
-                                                            {{ game.home_team.name }}</a>
-                                                        </strong>
-                                                    {% else %}
-                                                        <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
-                                                           class="removeLinkUnderline">
-                                                        {{ game.home_team.name }}</a>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
-                                                    <img src="{{ game.home_team.logo }}"
-                                                         alt="Home Team Logo"
-                                                         width="50px"
-                                                         height="50px"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4 ps-0 pe-0 text-center">
-                                            <div class="row">
-                                                <div class="col-4 ps-0 pe-0">
-                                                    <h5 class="text-center text-md-end text-lg-center">{{ game.home_team_points }}</h5>
-                                                </div>
-                                                <div class="col-4">
-                                                    <h5 class="text-center">-</h5>
-                                                </div>
-                                                <div class="col-4 ps-0 pe-0">
-                                                    <h5 class="text-center text-md-start text-lg-center">{{ game.away_team_points }}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="row align-items-center">
-                                                <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
-                                                    <img src="{{ game.away_team.logo }}"
-                                                         alt="Away Team Logo"
-                                                         width="50px"
-                                                         height="50px"/>
-                                                </div>
-                                                <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
-                                                    {% if game.home_team_points < game.away_team_points %}
-                                                        <strong>
-                                                            <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
-                                                               class="removeLinkUnderline">
-                                                            {{ game.away_team.name }}</a>
-                                                        </strong>
-                                                    {% else %}
-                                                        <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
-                                                           class="removeLinkUnderline">
-                                                        {{ game.away_team.name }}</a>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr class="dropdown-divider" />
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <!-- Upcoming Games -->
-                        <div class="col-12">
-                            <div class="container mb-5 ps-0 pe-0">
-                                <h2>Scheduled Games</h2>
-                                {% if games.upcoming_games == None %}<p>No Immediate Scheduled Games</p>{% endif %}
-                                {% for game in games.upcoming_games %}
-                                    <div class="row pt-3">
-                                        <div class="col text-center">{{ game.date|date:"D, M d, h:i A" }}</div>
-                                    </div>
-                                    <div class="row align-items-center pb-3">
-                                        <div class="col-4 ps-0">
-                                            <div class="row align-items-center justify-content-end">
-                                                <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
-                                                    <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
-                                                       class="removeLinkUnderline">{{ game.away_team.name }}</a>
-                                                </div>
-                                                <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
-                                                    <img src="{{ game.away_team.logo }}"
-                                                         alt="Away Team Logo"
-                                                         width="50px"
-                                                         height="50px"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4 ps-0 pe-0 text-center">
-                                            <div class="row">
-                                                <div class="col ps-0 pe-0">at</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="row align-items-center">
-                                                <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
-                                                    <img src="{{ game.home_team.logo }}"
-                                                         alt="Home Team Logo"
-                                                         width="50px"
-                                                         height="50px"/>
-                                                </div>
-                                                <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
-                                                    <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
-                                                       class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr class="dropdown-divider" />
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <!-- League Standings -->
-                        <div class="col-12">
-                            <div class="container mb-5 ps-0">
-                                <h2>Conference Standings</h2>
-                                <div class="row">
-                                    <div class="col-2 col-md-1 col-lg-2">Rank</div>
-                                    <div class="col-4 col-md-5 me-2 me-sm-0 ps-md-3 ps-1 ps-lg-0">Team</div>
-                                    <div class="col-1 offset-2 offset-sm-3 offset-lg-2">W</div>
-                                    <div class="col-1">L</div>
-                                    <div class="col-1">
-                                        Pct
-                                    </div>
-                                </div>
-                                {% for team in standings %}
-                                    <div class="row pb-0 align-items-center">
-                                        <div class="col-2 col-md-1 col-lg-2 pe-0 text-md-center text-lg-start ps-4 ps-md-1 ps-lg-4">
-                                            {{ team.rank }}
-                                        </div>
-                                        <div class="col-1 col-md-1 ps-0 pe-0 me-2 me-sm-0 ps-md-3 ps-lg-0">
-                                            <img src="{{ team.logo }}" alt="Team Logo" width="50px" height="50px"/>
-                                        </div>
-                                        <div class="col-5 ps-3">
-                                            <a href="{% url 'nba-team-page' team.name|removeSpaces %}">
-                                                {{ team.name }}
-                                            </a>
-                                        </div>
-                                        <div class="col-1 offset-sm-1 offset-md-2 offset-lg-1">
-                                            {{ team.wins }}
-                                        </div>
-                                        <div class="col-1">
-                                            {{ team.losses }}
-                                        </div>
-                                        <div class="col-1">
-                                            {{ team.win_pct }}
-                                        </div>
-                                    </div>
-                                    <hr class="dropdown-divider"/>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Second Column -->
-                    <div class="col-12 col-lg-6">
-                        <div class="container">
-                            <h2>
-                                Popular Articles
-                            </h2>
-                            {% for article in articles %}
-                                <ul class="ps-0">
-                                    <h5>
-                                        {{ article.title }}
-                                    </h5>
-                                    <img src="{{ article.thumbnail }}"
-                                         alt="Article Thumbnail"
-                                         width="50%"
-                                         height="50%"/>
-                                    <p>
-                                        {{ article.description }}
-                                    </p>
-                                    <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer">Go to article</a>
-                                </ul>
-                            {% endfor %}
-                        </div>
+                        <!-- Second Column -->
+                        <div class="col-12 col-lg-6">{% include "news.html" %}</div>
                     </div>
                 </div>
-            </div>
+            {% endblock content %}
         </div>
+        {% block footer %}
+            <script type="text/javascript"
+                    src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+            {{ search_form.media }}
+            <script>
+			(function ($) {
+				$("#add-form").click(function () {
+					var index = $("#id_inline_test_models-TOTAL_FORMS").val();
+					var newTable = $("#id_inline_test_models-__prefix__-DELETE")
+						.parents("table")
+						.clone();
+					newTable.find(":input").each(function () {
+						for (attr of ["name", "id"])
+							$(this).attr(
+								attr,
+								$(this).attr(attr).replace("__prefix__", index)
+							);
+					});
+					newTable.insertBefore($(this));
+					$("#id_inline_test_models-TOTAL_FORMS").val(
+						parseInt(
+							$("#id_inline_test_models-TOTAL_FORMS").val()
+						) + 1
+					);
+					newTable.slideDown();
+				});
+			})($);
+            </script>
+        {% endblock footer %}
     </body>
 </html>

@@ -1,6 +1,10 @@
 #logoText {
     font-weight: 900;
-    font-size: 40px;
+    font-size: 35px;
+}
+
+.blue-theme-color {
+    color: rgb(0, 162, 255);
 }
 
 .navBarItem {
@@ -13,10 +17,6 @@
     align-items: center;
 }
 
-.centerText {
-    text-align: center;
-}
-
 .nav-item {
     font-size: 20px;
 }
@@ -25,40 +25,8 @@
     color: rgb(0, 162, 255);
 }
 
-.SignupBox {
-    background-color: gray;
-}
-
-.form-signin {
-    margin: auto;
-}
-
 .removeLinkUnderline {
     text-decoration: none;
-}
-
-.centered {
-    font-size: 50px;
-    position: absolute;
-    top: 50%;
-    left: 25%;
-    transform: translate(-50%, -50%);
-}
-
-.bigLink {
-    font-size: 20px;
-}
-
-.subtitle {
-    font-size: 20px;
-    margin-top: 10px;
-}
-
-#nbaLogo {
-    max-height: 500px;
-    max-width: 500px;
-    height: auto;
-    width: auto;
 }
 
 html.index,
@@ -82,34 +50,23 @@ body.index {
     margin: 0;
 }
 
+.abstract-bg {
+    background-image: url('/static/background.png');
+    height: 100%;
+}
+
 #background {
     width: 100%;
     height: 100%;
 }
 
+.football-widget {
+    font-size: 16px !important;
+}
+
 #toggle-team-like-button {
     background: transparent;
     border: none !important;
-}
-
-.bigPaddingBetweenCols td,
-th {
-    padding: 0 15px;
-}
-
-.smallPaddingBetweenCols td,
-th {
-    padding: 0 5px;
-}
-
-table.center {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-table.top td,
-table.top td * {
-    vertical-align: top;
 }
 
 div.widget.p {
@@ -119,7 +76,7 @@ div.widget.p {
 p.description,
 a.description {
     font-size: 16px;
-    line-height: 150%;
+    color: black;
 }
 
 .aboutText {
@@ -144,4 +101,44 @@ html, body {
     min-height: 108px;
     max-width: 75%;
     max-height: 75%;
+}
+
+.row-striped:nth-of-type(odd) {
+    background-color: #efefef;
+}
+
+.row-striped:nth-of-type(even) {
+    background-color: #ffffff;
+}
+
+.player-table-text {
+    font-size: 13px;
+}
+
+.player-number-text {
+    color:rgb(150, 150, 150);
+}
+
+.loader {
+    height: 2px;
+    -webkit-animation: slide 2s ease-in-out infinite;
+    animation: slide 2s ease-in-out infinite;
+    background-color: red;
+    animation-direction: alternate;
+}
+
+@keyframes slide {
+    from {
+        margin-left: 0%;
+        width: 0%;
+    }
+
+    50% {
+        width: 30%;
+    }
+
+    to {
+        margin-left: 100%;
+        width: 0%;
+    }
 }

@@ -39,6 +39,8 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # Application definition
 
 INSTALLED_APPS = [
+    'dal',
+    'dal_select2',
     'django.contrib.contenttypes',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -105,15 +107,17 @@ WSGI_APPLICATION = 'teamGS.wsgi.application'
 # }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'teamgs_db',
-        'USER': 'marcogarciamuro',
-        'PASSWORD': env("POSTGRES_PASSWORD"),
-        'HOST': '34.127.112.62',
-        'POST': 5432
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'teamgs_db',
+        # 'USER': 'marcogarciamuro',
+        # 'PASSWORD': env("POSTGRES_PASSWORD"),
+        # 'HOST': '34.127.112.62',
+        # 'POST': 5432
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -146,6 +150,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 # Static files (CSS, JavaScript, Images)

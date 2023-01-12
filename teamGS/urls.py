@@ -42,7 +42,8 @@ urlpatterns = [
     path('soccer/team-page/', soccer_views.team_page, name="soccer-team-page"),
     path('soccer/', soccer_views.index, name="soccer-index"),
     path('soccer/team-not-found/', soccer_views.team_not_found),
-    path('soccer/upcoming-matches/<int:id>/', soccer_views.upcoming_matches),
+    path('soccer/upcoming-matches/<int:team_id>/',
+         soccer_views.upcoming_matches),
     path('soccer/team-page/toggle-like/',
          soccer_views.toggle_team_like, name="soccer-toggle-like"),
     path('nba/team-page/', nba_views.team_page, name="nba-team-page"),
@@ -57,5 +58,9 @@ urlpatterns = [
          soccer_views.team_page, name="soccer-team-page"),
     path('nba/team-page/<str:team_name>/',
          nba_views.team_page, name="nba-team-page"),
-    path('get-liked-teams/', core_views.getLikedTeams)
+    path('get-liked-teams/', core_views.getLikedTeams),
+    path('nba_team_autocomplete/', nba_views.team_autocomplete.as_view(),
+         name='nba_team_autocomplete'),
+    path('soccer_team_autocomplete/', soccer_views.team_autocomplete.as_view(),
+         name="soccer_team_autocomplete")
 ]

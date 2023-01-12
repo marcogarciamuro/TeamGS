@@ -1,0 +1,18 @@
+{% load extras %}
+<div class="container mb-5 mt-3 ps-0">
+    <h2>Previous Games</h2>
+    <div id="wg-api-football-fixtures"
+         data-host="api-football-v1.p.rapidapi.com"
+         data-refresh="0"
+         data-date=""
+         data-league=""
+         data-team="{{ team.teamID }}"
+         data-season=""
+         data-last="5"
+         data-next=""
+         data-key="{% get_env_var 'SOCCER_API_KEY' %}"
+         data-theme=""
+         data-show-errors="true"
+         class="api_football_loader">
+    </div>
+</div>

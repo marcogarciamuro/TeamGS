@@ -1,0 +1,71 @@
+{% load extras %}
+<div class="container mb-5 ps-0 pe-0">
+    <h2>Previous Games</h2>
+    {% for game in games.previous_games %}
+        <div class="row pt-2">
+            <div class="col text-center">{{ game.date|date:"D, M d, h:i A" }}</div>
+        </div>
+        <div class="row align-items-center pb-2">
+            <div class="col-4 ps-0">
+                <div class="row align-items-center justify-content-end">
+                    <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
+                        {% if game.home_team_points > game.away_team_points %}
+                            <strong>
+                                <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
+                                   class="removeLinkUnderline">
+                                {{ game.home_team.name }}</a>
+                            </strong>
+                        {% else %}
+                            <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
+                               class="removeLinkUnderline">
+                            {{ game.home_team.name }}</a>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
+                        <img src="{{ game.home_team.logo }}"
+                             alt="Home Team Logo"
+                             width="50px"
+                             height="50px"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 ps-0 pe-0 text-center">
+                <div class="row">
+                    <div class="col-4 ps-0 pe-0">
+                        <h5 class="text-center text-md-end text-lg-center">{{ game.home_team_points }}</h5>
+                    </div>
+                    <div class="col-4">
+                        <h5 class="text-center">-</h5>
+                    </div>
+                    <div class="col-4 ps-0 pe-0">
+                        <h5 class="text-center text-md-start text-lg-center">{{ game.away_team_points }}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
+                        <img src="{{ game.away_team.logo }}"
+                             alt="Away Team Logo"
+                             width="50px"
+                             height="50px"/>
+                    </div>
+                    <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
+                        {% if game.home_team_points < game.away_team_points %}
+                            <strong>
+                                <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
+                                   class="removeLinkUnderline">
+                                {{ game.away_team.name }}</a>
+                            </strong>
+                        {% else %}
+                            <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
+                               class="removeLinkUnderline">
+                            {{ game.away_team.name }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="dropdown-divider" />
+    {% endfor %}
+</div>
