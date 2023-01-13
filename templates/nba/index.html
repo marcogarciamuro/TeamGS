@@ -9,10 +9,10 @@
         <link rel="stylesheet" href="{% static 'teamGS.css' %}" />
         <script src="https://kit.fontawesome.com/755c2f7a3d.js" crossorigin="anonymous"></script>
         <script src="https://cdn.rawgit.com/xcash/bootstrap-autocomplete/3de7ad37/dist/latest/bootstrap-autocomplete.js"></script>
-        <script>
+        {% comment %} <script>
 			$(".basicAutoComplete").autoComplete({ minLength: 1 });
 			$(".dropdown-menu").css({ top: "auto", left: "auto" });
-        </script>
+        </script> {% endcomment %}
         <meta name="description" content="Sports Website" />
         <meta name="keywords" content="sports, website, soccer, basketball" />
         <title>NBA</title>
@@ -32,7 +32,7 @@
             {% endblock content %}
         </div>
     </body>
-    {% block footer %}
+    {% comment %} {% block footer %}
         <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
         {{ search_form.media }}
         <script>
@@ -57,5 +57,5 @@
 			});
 		})($);
         </script>
-    {% endblock footer %}
+    {% endblock footer %} {% endcomment %}
 </html>

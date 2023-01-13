@@ -1,19 +1,23 @@
 <div class="container mt-3">
-    <form method="post" action="{% url 'soccer-team-page' %}">
-        <div class="row justify-content-end">
-            <div class="col-auto">
-                <div class="input-group">
-                    {% csrf_token %}
-                    {{ search_form }}
-                    <button class="btn btn-primary" type="submit" name="team_name">
-                        <i class="fa fa-search"></i>
-                    </button>
+    {% block form %}
+        <form method="post" action="{% url 'soccer-team-page' %}">
+            <div class="row justify-content-end">
+                <div class="col-auto">
+                    <div class="input-group">
+                        {% csrf_token %}
+                        {{ search_form }}
+                        <button class="btn btn-primary" type="submit" name="team_name">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
-    <h1>
-        Soccer
-        <i class="fa-solid fa-futbol"></i>
-    </h1>
+        </form>
+    {% endblock form %}
+    {% block content %}
+        <h1>
+            Soccer
+            <i class="fa-solid fa-futbol"></i>
+        </h1>
+    {% endblock content %}
 </div>
