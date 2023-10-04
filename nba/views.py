@@ -13,6 +13,7 @@ from datetime import datetime, date, timedelta
 from dal import autocomplete
 from django.utils.html import format_html
 from django.utils import timezone
+from django.forms.models import model_to_dict
 
 env = environ.Env()
 environ.Env.read_env()
@@ -122,18 +123,23 @@ def get_live_games():
         away_team_points = game["scores"]["visitors"]["points"]
         home_team_points = game["scores"]["home"]["points"]
         quarter = game["periods"]["current"]
-        status = game["status"]["long"]
+        halftime = game["status"]["halftime"]
+        print("HALFTIME:", halftime)
+        end_of_quarter = game["periods"]["endOfPeriod"]
+        print("endOfQuarter:", end_of_quarter)
         clock = game["status"]["clock"]
         print("API: QUARTER = ", quarter)
         live_games.append({
+            "game_id": game_id,
             "home_team": home_team,
             "away_team": away_team,
             "quarter": quarter,
             "clock": clock,
             "home_team_points": home_team_points,
             "away_team_points": away_team_points,
+            "halftime": halftime,
+            "end_of_quarter": end_of_quarter,
         })
-    print(live_games)
     return live_games
 
 
@@ -667,13 +673,15 @@ def toggle_team_like(request):
         return JsonResponse({"success": False})
 
 
-def liked_list(request):
-    teams_liked = Team.new_manager.filter(liked_by=request.user)
-    print(teams_liked)
-    page_data = {
-        "teams_liked": teams_liked
-    }
-    return render(request, "accounts/liked.html", page_data)
+def update_live_games(request):
+    live_games = get_live_games()
+    for game in live_games:
+        game['home_team'] = model_to_dict(
+            game['home_team'], exclude=['logo', 'liked_by'])
+        game['away_team'] = model_to_dict(
+            game['away_team'], exclude=['logo', 'liked_by'])
+    print("LIVE GAMES FROM AJAX CALL:", live_games)
+    return JsonResponse({"success": True, "live_games": live_games})
 
 
 def room(request, room_name):

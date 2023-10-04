@@ -1,2 +1,8 @@
 Unidecode
 django-autocomplete-light
+channels / daphne
+tkinter
+dateutil
+Pillow
+channels-redis
+redis-server

@@ -1,73 +1,123 @@
 {% load extras %}
+<script>
+    function updateScores() {
+        $.ajax({
+            url: '/update-nba-live-games/',
+            dataType: 'json',
+            success: updateScoresSuccess
+        })
+    }
+
+    function updateScoresSuccess(data) {
+        if(data.success) {
+            console.log("SUCCESS")
+            for(var i = 0; i < data.live_games.length; i++) {
+                var game = data.live_games[i];
+                var game_id = game.game_id;
+
+                // Update Game status and or clock
+                if(game.halftime) {
+                    document.getElementById("game-" + game_id + "-status").innerHTML =
+                        "Halftime"
+                } else if(game.end_of_quarter) {
+                    document.getElementById("game-" + game_id + "-status").innerHTML =
+                        "End Q" + game.quarter
+                } else {
+                    document.getElementById("game-" + game_id + "-status").innerHTML =
+                        "Q" + game.quarter + " - " + game.clock
+                }
+
+                // Update home and away team scores
+                document.getElementById("game-" + game_id + "-home-pts").innerHTML = 
+                    game.home_team_points
+                document.getElementById("game-" + game_id + "-away-pts").innerHTML = 
+                    game.away_team_points
+            }
+            console.log(data.live_games)
+        }
+        else {
+            console.log("SOMETHING WENT WRONG")
+        }
+    }
+    setInterval(updateScores, 24000);
+</script>
 <div class="container mb-5 ps-0 pe-0">
     <h2>Live Games</h2>
     {% if not live_games %}
         <p>No games in progress</p>
     {% else %}
         {% for game in live_games %}
-            <div class="row pb-3 justify-content-center">
-                <div class="col-auto ps-3 pe-3 text-center">
-                    Q{{ game.quarter }} - {{ game.clock }}
-                    <div class="col-12">
-                        <div class="loader"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row align-items-center">
-                <div class="col-4 ps-0">
-                    <div class="row align-items-center justify-content-end">
-                        <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
-                            {% if game.home_team_points > game.away_team_points %}
-                                <strong>
-                                    <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
-                                       class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                                </strong>
-                            {% else %}
-                                <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
-                                   class="removeLinkUnderline">{{ game.home_team.name }}</a>
-                            {% endif %}
-                        </div>
-                        <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
-                            <img src="{{ game.home_team.logo }}"
-                                 alt="Home Team Logo"
-                                 width="50px"
-                                 height="50px"/>
+            <div id="game-{{ game.game_id }}" class="container">
+                <div class="row pb-3 justify-content-center">
+                    <div class="col-auto ps-3 pe-3 text-center">
+                        <div id="game-{{ game.game_id }}-status">Q{{ game.quarter }} - {{ game.clock }}</div>
+                        <div class="col-12">
+                            <div class="loader"></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-4 ps-0 pe-0 text-center">
-                    <div class="row">
-                        <div class="col-4 ps-0 pe-0">
-                            <h5 class="text-center text-md-end text-lg-center">{{ game.home_team_points }}</h5>
-                        </div>
-                        <div class="col-4">
-                            <h5 class="text-center">-</h5>
-                        </div>
-                        <div class="col-4 ps-0 pe-0">
-                            <h5 class="text-center text-md-end text-lg-center">{{ game.away_team_points }}</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="row align-items-center">
-                        <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
-                            <img src="{{ game.away_team.logo }}"
-                                 alt="Away Team Logo"
-                                 width="50px"
-                                 height="50px"/>
-                        </div>
-                        <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
-                            {% if game.home_team_points < game.away_team_points %}
-                                <strong>
+                <div class="row align-items-center">
+                    <div class="col-4 ps-0">
+                        <div class="row align-items-center justify-content-end">
+                            <div class="col-12 col-md-7 col-lg-12 order-2 order-md-1 order-lg-2 pe-0 text-center">
+                                {% if game.home_team_points < game.away_team_points %}
+                                    <strong>
+                                        <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
+                                           class="removeLinkUnderline">
+                                        {{ game.away_team.name }}</a>
+                                    </strong>
+                                {% else %}
                                     <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
                                        class="removeLinkUnderline">
                                     {{ game.away_team.name }}</a>
-                                </strong>
-                            {% else %}
-                                <a href="{% url 'nba-team-page' game.away_team.name|removeSpaces %}"
-                                   class="removeLinkUnderline">
-                                {{ game.away_team.name }}</a>
-                            {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="col-12 col-md-auto col-lg-12 order-1 order-md-2 order-lg-1 pe-0 text-center">
+                                <img src="{{ game.away_team.logo }}"
+                                     alt="Away Team Logo"
+                                     width="50px"
+                                     height="50px"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 ps-0 pe-0 text-center">
+                        <div class="row">
+                            <div class="col-4 ps-0 pe-0">
+                                <h5 id="game-{{ game.game_id }}-away-pts"
+                                    class="text-center text-md-end text-lg-center">
+                                    {{ game.away_team_points }}
+                                </h5>
+                            </div>
+                            <div class="col-4">
+                                <h5 class="text-center">-</h5>
+                            </div>
+                            <div class="col-4 ps-0 pe-0">
+                                <h5 id="game-{{ game.game_id }}-home-pts"
+                                    class="text-center text-md-end text-lg-center">
+                                    {{ game.home_team_points }}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row align-items-center">
+                            <div class="col-12 col-md-auto col-lg-12 order-4 pe-0 ps-0 text-center">
+                                <img src="{{ game.home_team.logo }}"
+                                     alt="Home Team Logo"
+                                     width="50px"
+                                     height="50px"/>
+                            </div>
+                            <div class="col-12 col-md-7 col-lg-12 order-5 me-0 ps-0 pe-0 text-center">
+                                {% if game.home_team_points > game.away_team_points %}
+                                    <strong>
+                                        <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
+                                           class="removeLinkUnderline">{{ game.home_team.name }}</a>
+                                    </strong>
+                                {% else %}
+                                    <a href="{% url 'nba-team-page' game.home_team.name|removeSpaces %}"
+                                       class="removeLinkUnderline">{{ game.home_team.name }}</a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

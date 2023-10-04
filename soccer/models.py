@@ -64,6 +64,6 @@ class Player(models.Model):
     height_inches = models.PositiveSmallIntegerField(null=True)
     weight = models.PositiveSmallIntegerField(null=True)
     photo = models.ImageField()
-    nationality = models.CharField(max_length=100)
+    nationality = models.CharField(max_length=100, null=True)
     jersey_number = models.PositiveSmallIntegerField(null=True)
     position = models.CharField(null=True, max_length=1)

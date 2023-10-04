@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from core.forms import JoinForm, LoginForm
 from soccer.models import Team as SoccerTeam
 from nba.models import Team as NBATeam
-from django.core import serializers
 
 
 def about(request):

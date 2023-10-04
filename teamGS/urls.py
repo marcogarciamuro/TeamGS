@@ -62,5 +62,6 @@ urlpatterns = [
     path('nba_team_autocomplete/', nba_views.team_autocomplete.as_view(),
          name='nba_team_autocomplete'),
     path('soccer_team_autocomplete/', soccer_views.team_autocomplete.as_view(),
-         name="soccer_team_autocomplete")
+         name="soccer_team_autocomplete"),
+    path('update-nba-live-games/', nba_views.update_live_games),
 ]
