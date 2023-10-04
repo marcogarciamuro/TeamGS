@@ -15,7 +15,7 @@
 	                var team_name_cleaned = team_name.replace(" ", "-");
 	                var url = "{% url 'soccer-team-page' 'name' %}".replace('name', team_name_cleaned);
 	                $("#liked-soccer-teams").append(
-	                    $('<li/>', {'id': 'soccer-'+team_id}).append(
+	                    $('<li/>').append(
 	                        $('<a/>', {
 	                            'class': 'dropdown-item',
 	                            'href': url,
@@ -31,7 +31,7 @@
 	                var team_id = liked_nba_teams[i].teamID;
 	                var url = "{% url 'nba-team-page' 'name' %}".replace('name', team_name_cleaned);
 	                $("#liked-nba-teams").append(
-	                    $('<li/>', {'id': 'nba-'+ team_id}).append(
+	                    $('<li/>').append(
 	                        $('<a/>', {
 	                            'class': 'dropdown-item',
 	                            'href': url,

@@ -47,7 +47,6 @@
             {% for player in players %}
                 <div class="row row-striped align-items-center pb-1 pt-1 player-table-text"
                      style="height:48px;">
-                    {% get_alpha_2_code player.nationality as country_code %}
                     <div class="col-2 offset-1">
                         {% if player.position is None %}
                             --
