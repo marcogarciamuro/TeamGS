@@ -103,11 +103,11 @@ html, body {
     max-height: 75%;
 }
 
-.row-striped:nth-of-type(odd) {
+.row-striped:nth-of-type(even) {
     background-color: #efefef;
 }
 
-.row-striped:nth-of-type(even) {
+.row-striped:nth-of-type(odd) {
     background-color: #ffffff;
 }
 
@@ -141,4 +141,12 @@ html, body {
         margin-left: 100%;
         width: 0%;
     }
+}
+
+.player-pic-name {
+    display: flex;
+}
+
+.players-table {
+    min-width: 270px;
 }

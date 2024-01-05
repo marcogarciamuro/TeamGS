@@ -83,6 +83,11 @@ certification.
     which points to my instance group running my full application.
 
 ## Visuals
+<img src="./demo_media/landing_page.png" width="800">
+<img src="./demo_media/soccer_home_page.png" width="800">
+<img src="./demo_media/soccer_team_page.png" width="800">
+<img src="./demo_media/nba_team_page.png" width="800">
+
 
 ## Resources
 

@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+
 # Create your models here.
 
 
@@ -22,14 +23,14 @@ class Team(models.Model):
     league = models.ForeignKey(League, on_delete=models.CASCADE)
     logo = models.ImageField()
     liked_by = models.ManyToManyField(
-        User, related_name='%(class)s_liked_soccer_teams', default=None, blank=True)
+        User, related_name="%(class)s_liked_soccer_teams", default=None, blank=True
+    )
     objects = models.Manager()
     new_manager = NewManager()
 
     @classmethod
     def create(cls, name, teamID, league, logo, liked_by):
-        team = cls(name=name, teamID=teamID, league=league,
-                   logo=logo, likedBy=liked_by)
+        team = cls(name=name, teamID=teamID, league=league, logo=logo, likedBy=liked_by)
         return team
 
 
@@ -44,7 +45,7 @@ class Article(models.Model):
     new_manager = NewManager()
 
     class Meta:
-        get_latest_by = ['retrieval_date']
+        get_latest_by = ["retrieval_date"]
 
 
 class TeamArticle(Article):
@@ -60,10 +61,10 @@ class Player(models.Model):
     name = models.CharField(max_length=100)
     age = models.PositiveSmallIntegerField(null=True)
     team = models.ForeignKey(Team, default=None, on_delete=models.CASCADE)
-    height_feet = models.PositiveSmallIntegerField(null=True)
-    height_inches = models.PositiveSmallIntegerField(null=True)
-    weight = models.PositiveSmallIntegerField(null=True)
-    photo = models.ImageField()
-    nationality = models.CharField(max_length=100, null=True)
     jersey_number = models.PositiveSmallIntegerField(null=True)
     position = models.CharField(null=True, max_length=1)
+    photo = models.ImageField()
+    height_feet = models.PositiveSmallIntegerField(null=True, blank=True)
+    height_inches = models.PositiveSmallIntegerField(null=True, blank=True)
+    weight = models.PositiveSmallIntegerField(null=True, blank=True)
+    nationality = models.CharField(max_length=100, blank=True, null=True)

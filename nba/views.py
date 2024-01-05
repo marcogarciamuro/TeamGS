@@ -22,13 +22,11 @@ utc_zone = tz.tzutc()
 pst_zone = tz.tzlocal()
 
 NBA_API_HEADERS = {
-    'x-rapidapi-host': "api-nba-v1.p.rapidapi.com",
-    'x-rapidapi-key': env('NBA_API_KEY')
+    "x-rapidapi-host": "api-nba-v1.p.rapidapi.com",
+    "x-rapidapi-key": env("NBA_API_KEY"),
 }
 
-NEWS_API_HEADERS = {
-    'User-agent': 'Mozilla/5.0'
-}
+NEWS_API_HEADERS = {"User-agent": "Mozilla/5.0"}
 
 EAST_CONFERENCE = [41, 38, 27, 26, 24, 21, 20, 15, 10, 7, 6, 5, 4, 2, 1]
 WEST_CONFERENCE = [40, 31, 30, 29, 28, 25, 23, 22, 19, 17, 16, 14, 11, 9, 8]
@@ -36,7 +34,7 @@ WEST_CONFERENCE = [40, 31, 30, 29, 28, 25, 23, 22, 19, 17, 16, 14, 11, 9, 8]
 cur_date = date.today()
 cur_datetime = timezone.now()
 # cur_season = str(cur_date.year)
-cur_season = 2022
+cur_season = 2023
 
 
 # Create your views here.
@@ -54,19 +52,19 @@ def index(request):
         "search_form": search_form,
         "live_games": live_games,
     }
-    return render(request, 'nba/index.html', page_data)
+    return render(request, "nba/index.html", page_data)
 
 
 def call_api(endpoint):
-    conn = http.client.HTTPSConnection('api-nba-v1.p.rapidapi.com')
-    conn.request('GET', endpoint, headers=NBA_API_HEADERS)
+    conn = http.client.HTTPSConnection("api-nba-v1.p.rapidapi.com")
+    conn.request("GET", endpoint, headers=NBA_API_HEADERS)
     res = conn.getresponse()  # Get response from server
     data = res.read()
     json_dict = json.loads(data)
-    results = json_dict['results']
+    results = json_dict["results"]
     if results == 0:
         return None
-    return json_dict['response']
+    return json_dict["response"]
 
 
 def get_live_games():
@@ -105,8 +103,7 @@ def get_live_games():
         except:
             home_team_name = game["teams"]["home"]["name"]
             home_team_logo = game["teams"]["home"]["logo"]
-            home_team = create_team(
-                home_team_name, home_team_id, home_team_logo)
+            home_team = create_team(home_team_name, home_team_id, home_team_logo)
             if not home_team:
                 continue
 
@@ -115,8 +112,7 @@ def get_live_games():
         except:
             away_team_name = game["teams"]["visitors"]["name"]
             away_team_logo = game["teams"]["visitors"]["logo"]
-            away_team = create_team(
-                away_team_name, away_team_id, away_team_logo)
+            away_team = create_team(away_team_name, away_team_id, away_team_logo)
             if not away_team:
                 continue
 
@@ -129,23 +125,24 @@ def get_live_games():
         print("endOfQuarter:", end_of_quarter)
         clock = game["status"]["clock"]
         print("API: QUARTER = ", quarter)
-        live_games.append({
-            "game_id": game_id,
-            "home_team": home_team,
-            "away_team": away_team,
-            "quarter": quarter,
-            "clock": clock,
-            "home_team_points": home_team_points,
-            "away_team_points": away_team_points,
-            "halftime": halftime,
-            "end_of_quarter": end_of_quarter,
-        })
+        live_games.append(
+            {
+                "game_id": game_id,
+                "home_team": home_team,
+                "away_team": away_team,
+                "quarter": quarter,
+                "clock": clock,
+                "home_team_points": home_team_points,
+                "away_team_points": away_team_points,
+                "halftime": halftime,
+                "end_of_quarter": end_of_quarter,
+            }
+        )
     return live_games
 
 
 def get_games(team):
-    games_are_outdated = cur_datetime >= team.last_updated + \
-        timedelta(days=1)
+    games_are_outdated = cur_datetime >= team.last_updated + timedelta(days=1)
     team_is_new = team.last_updated == team.created_on
 
     # if team is new (has no cached games) or team is in DB and games are outdated:
@@ -163,9 +160,9 @@ def get_games(team):
 def team_page(request, team_name=None):
     user_is_signed_in = not request.user.is_anonymous
     search_form = TeamSearch()
-    if(request.method == "POST"):
+    if request.method == "POST":
         search_form = TeamSearch(request.POST)
-        if(search_form.is_valid()):  # process form data which is the searched team name
+        if search_form.is_valid():  # process form data which is the searched team name
             team_search = search_form.cleaned_data["team_query"]
             team = get_team(team_search)
             if team is None:
@@ -213,10 +210,14 @@ class team_autocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, item):
         print(item)
-        return format_html('<span><img src="{}" width="20px" height="20px"> {}</span>', item.logo, item.name)
+        return format_html(
+            '<span><img src="{}" width="20px" height="20px"> {}</span>',
+            item.logo,
+            item.name,
+        )
 
     def get_selected_result_label(self, item):
-        return format_html('{}', item.name)
+        return format_html("{}", item.name)
 
 
 def get_players(team_obj):
@@ -228,29 +229,31 @@ def get_players(team_obj):
     else:
         # Fetch players from api
         print("NO CACHED PLAYERS, FETCHING FROM API")
-        endpoint = "/players?team=" + \
-            str(team_obj.teamID) + "&season=" + str(cur_season)
+        endpoint = (
+            "/players?team=" + str(team_obj.teamID) + "&season=" + str(cur_season)
+        )
         player_list = call_api(endpoint)
         if not player_list:
             return None
         for player in player_list:
-            if player['birth']['date']:
+            if player["birth"]["date"]:
                 player_birthdate = datetime.strptime(
-                    player['birth']['date'], '%Y-%m-%d')
+                    player["birth"]["date"], "%Y-%m-%d"
+                )
                 age = get_player_age(player_birthdate)
             else:
                 age = None
             Player.objects.create(
-                player_id=player['id'],
-                firstname=player['firstname'],
-                lastname=player['lastname'],
+                player_id=player["id"],
+                firstname=player["firstname"],
+                lastname=player["lastname"],
                 team=team_obj,
                 age=age,
-                height_feet=player['height']['feets'],
-                height_inches=player['height']['inches'],
-                weight=player['weight']['pounds'],
-                jersey_number=player['leagues']['standard']['jersey'],
-                position=player['leagues']['standard']['pos']
+                height_feet=player["height"]["feets"],
+                height_inches=player["height"]["inches"],
+                weight=player["weight"]["pounds"],
+                jersey_number=player["leagues"]["standard"]["jersey"],
+                position=player["leagues"]["standard"]["pos"],
             )
         players = Player.objects.filter(team=team_obj)
         return players
@@ -258,7 +261,10 @@ def get_players(team_obj):
 
 def get_player_age(player_birthdate_obj):
     age = cur_date.year - player_birthdate_obj.year
-    if player_birthdate_obj.month > cur_date.month or (player_birthdate_obj.month == cur_date.month and player_birthdate_obj.day < cur_date.day):
+    if player_birthdate_obj.month > cur_date.month or (
+        player_birthdate_obj.month == cur_date.month
+        and player_birthdate_obj.day < cur_date.day
+    ):
         age -= 1
     return age
 
@@ -274,25 +280,33 @@ def get_team(team_name):
         if not team_results:
             return None
         team_info = team_results[0]
-        team_id = team_info['id']
-        team_name = team_info['name']
-        team_logo = team_info['logo']
-        team_conference = team_info['leagues']['standard']['conference']
+        team_id = team_info["id"]
+        team_name = team_info["name"]
+        team_logo = team_info["logo"]
+        team_conference = team_info["leagues"]["standard"]["conference"]
         try:
             conference_obj = Conference.objects.get(region=team_conference)
         except:
             conference_obj = Conference.objects.create(region=team_conference)
-        Team.objects.create(teamID=team_id, name=team_name,
-                            logo=team_logo, conference=conference_obj,
-                            last_updated=cur_datetime, created_on=cur_datetime
-                            )
+        Team.objects.create(
+            teamID=team_id,
+            name=team_name,
+            logo=team_logo,
+            conference=conference_obj,
+            last_updated=cur_datetime,
+            created_on=cur_datetime,
+        )
         team = Team.objects.get(teamID=team_id)
     return team
 
 
 def get_standings(team_obj):
-    endpoint = "/standings?league=standard&season=" + \
-        str(cur_season) + "&conference=" + team_obj.conference.region
+    endpoint = (
+        "/standings?league=standard&season="
+        + str(cur_season)
+        + "&conference="
+        + team_obj.conference.region
+    )
     standings = call_api(endpoint)
     for position in standings:
         team_info = position["team"]
@@ -300,10 +314,14 @@ def get_standings(team_obj):
         try:
             team = Team.objects.get(teamID=team_id)
         except:
-            Team.objects.create(name=team_info["name"],
-                                teamID=team_id, logo=team_info["logo"], conference=team_obj.conference,
-                                last_updated=cur_datetime, created_on=cur_datetime
-                                )
+            Team.objects.create(
+                name=team_info["name"],
+                teamID=team_id,
+                logo=team_info["logo"],
+                conference=team_obj.conference,
+                last_updated=cur_datetime,
+                created_on=cur_datetime,
+            )
             team = Team.objects.get(teamID=team_id)
 
         team.rank = position["conference"]["rank"]
@@ -311,8 +329,7 @@ def get_standings(team_obj):
         team.wins = position["win"]["total"]
         team.losses = position["loss"]["total"]
         team.save()
-    standings = Team.objects.filter(
-        conference=team_obj.conference).order_by("rank")
+    standings = Team.objects.filter(conference=team_obj.conference).order_by("rank")
     return standings
 
 
@@ -320,8 +337,8 @@ def update_game_score(game_id):
     print("FIXING GAME SCORE")
     endpoint = "/games?id=" + str(game_id)
     game_stats = call_api(endpoint)[0]
-    home_team_points = game_stats['scores']['home']['points']
-    away_team_points = game_stats['scores']['visitors']['points']
+    home_team_points = game_stats["scores"]["home"]["points"]
+    away_team_points = game_stats["scores"]["visitors"]["points"]
     game_obj_to_fix = Game.objects.get(game_id=game_id)
     game_obj_to_fix.home_team_points = home_team_points
     game_obj_to_fix.away_team_points = away_team_points
@@ -329,17 +346,21 @@ def update_game_score(game_id):
 
 
 def get_cached_games(teamObj):
-    previous_five_games = Game.objects.filter(Q(home_team=teamObj, date__lte=cur_date)
-                                              | Q(away_team=teamObj, date__lte=cur_date)).order_by('-date')[:5]
-    upcoming_three_games = Game.objects.filter(Q(home_team=teamObj, date__gte=cur_date)
-                                               | Q(away_team=teamObj, date__gte=cur_date)).order_by('date')[:3]
+    previous_five_games = Game.objects.filter(
+        Q(home_team=teamObj, date__lte=cur_date)
+        | Q(away_team=teamObj, date__lte=cur_date)
+    ).order_by("-date")[:5]
+    upcoming_three_games = Game.objects.filter(
+        Q(home_team=teamObj, date__gte=cur_date)
+        | Q(away_team=teamObj, date__gte=cur_date)
+    ).order_by("date")[:3]
     for game in previous_five_games:
         if not game.home_team_points or not game.away_team_points:
             update_game_score(game.game_id)
             game = Game.objects.filter(game_id=game.game_id)
     games = {
         "previous_games": reversed(previous_five_games),
-        "upcoming_games": upcoming_three_games
+        "upcoming_games": upcoming_three_games,
     }
     return games
 
@@ -354,12 +375,16 @@ def create_team(team_name, team_id, team_logo):
     try:
         team_conference = Conference.objects.get(region=team_conference_region)
     except:
-        team_conference = Conference.objects.create(
-            region=team_conference_region)
+        team_conference = Conference.objects.create(region=team_conference_region)
 
-    Team.objects.create(name=team_name, teamID=team_id, logo=team_logo,
-                        conference=team_conference, last_updated=cur_datetime,
-                        created_on=cur_datetime)
+    Team.objects.create(
+        name=team_name,
+        teamID=team_id,
+        logo=team_logo,
+        conference=team_conference,
+        last_updated=cur_datetime,
+        created_on=cur_datetime,
+    )
     return Team.objects.get(teamID=team_id)
 
 
@@ -367,8 +392,7 @@ def get_games_from_api(team_obj):
     team_obj.last_updated = cur_date
     team_obj.save()
     main_team_name = team_obj.name
-    endpoint = "/games?season=" + \
-        str(cur_season) + "&team=" + str(team_obj.teamID)
+    endpoint = "/games?season=" + str(cur_season) + "&team=" + str(team_obj.teamID)
     games = call_api(endpoint)
     if not games:
         return None
@@ -385,8 +409,7 @@ def get_games_from_api(team_obj):
         except:
             home_team_id = game["teams"]["home"]["id"]
             home_team_logo = game["teams"]["home"]["logo"]
-            home_team = create_team(
-                home_team_name, home_team_id, home_team_logo)
+            home_team = create_team(home_team_name, home_team_id, home_team_logo)
             if not home_team:
                 continue
 
@@ -397,8 +420,7 @@ def get_games_from_api(team_obj):
         except:
             away_team_id = game["teams"]["visitors"]["id"]
             away_team_logo = game["teams"]["visitors"]["logo"]
-            away_team = create_team(
-                away_team_name, away_team_id, away_team_logo)
+            away_team = create_team(away_team_name, away_team_id, away_team_logo)
             if not away_team:
                 continue
 
@@ -412,33 +434,37 @@ def get_games_from_api(team_obj):
         day = int(game_date[8:10])
         month = int(game_date[5:7])
         year = int(game_date[0:4])
-        date_obj_utc = datetime(
-            year, month, day, hour, minute, second)
+        date_obj_utc = datetime(year, month, day, hour, minute, second)
         date_obj_utc = date_obj_utc.replace(tzinfo=utc_zone)
         date_obj_pst = date_obj_utc.astimezone(pst_zone)
         try:
-            Game.objects.create(game_id=game_id,
-                                home_team=home_team, away_team=away_team,
-                                home_team_points=home_team_points, away_team_points=away_team_points,
-                                date=date_obj_pst
-                                )
+            Game.objects.create(
+                game_id=game_id,
+                home_team=home_team,
+                away_team=away_team,
+                home_team_points=home_team_points,
+                away_team_points=away_team_points,
+                date=date_obj_pst,
+            )
         except:
             # Game object already exists and was created by the opposite team Obj
             pass
 
-        game_list.append({
-            "id": game_id,
-            "status": game_status,
-            "date_pst": date_obj_pst,
-            "date": date_obj_utc,
-            "home_team": home_team,
-            "home_team_points": home_team_points,
-            "away_team": away_team,
-            "away_team_points": away_team_points
-        })
+        game_list.append(
+            {
+                "id": game_id,
+                "status": game_status,
+                "date_pst": date_obj_pst,
+                "date": date_obj_utc,
+                "home_team": home_team,
+                "home_team_points": home_team_points,
+                "away_team": away_team,
+                "away_team_points": away_team_points,
+            }
+        )
         # print("FINISHED EXAMINING ONE GAME")
     print("DONE GOING THRU GAMES")
-    game_list.sort(key=lambda x: x['date'])
+    game_list.sort(key=lambda x: x["date"])
     previous_games = []
     upcoming_games = []
     consequtive_matchups = 0
@@ -452,7 +478,7 @@ def get_games_from_api(team_obj):
     teamHasUpcomingGames = False
 
     for game in reversed(game_list):
-        if game['status'] == "Scheduled":
+        if game["status"] == "Scheduled":
             teamHasUpcomingGames = True
 
         if game["status"] == "Finished":
@@ -494,39 +520,59 @@ def get_games_from_api(team_obj):
                 print("WE GOT DROPPPED OFF, SHOULD DISPLAY NO MORE")
                 eliminated = True
 
-            if(len(previous_games) < 5):
+            if len(previous_games) < 5:
                 previous_games.append(game)
 
-    if no_immediate_scheduled_games == True or eliminated == True or teamHasUpcomingGames == False:
+    if (
+        no_immediate_scheduled_games == True
+        or eliminated == True
+        or teamHasUpcomingGames == False
+    ):
         upcoming_games = None
 
     else:
         for game in game_list:
-            if len(upcoming_games) < 3 and game["status"] == "Scheduled" and game["date_pst"] > cur_datetime.replace(tzinfo=pst_zone):
+            if (
+                len(upcoming_games) < 3
+                and game["status"] == "Scheduled"
+                and game["date_pst"] > cur_datetime.replace(tzinfo=pst_zone)
+            ):
                 upcoming_games.append(game)
 
     games = {
         "previous_games": reversed(previous_games),
-        "upcoming_games": upcoming_games
+        "upcoming_games": upcoming_games,
     }
     return games
 
 
 def get_articles_from_api(team=None):
     print("Getting articles from API")
-    key = str(env('NEWS_API_KEY'))
+    key = str(env("NEWS_API_KEY"))
     if team:
         players = get_players(team)
         team_nickname = team.name.split()[-1]
-        q = '"' + team.name.replace(' ', '-') + '" OR "' + team_nickname + '"'
+        q = '"' + team.name.replace(" ", "-") + '" OR "' + team_nickname + '"'
         for player in players:
-            q += ' OR "' + player.firstname + '-' + player.lastname + '"'
-        q = q.replace(' ', '%20')
-        endpoint = "/v2/everything?sortBy=publishedAt&language=en&q=" + q + \
-            "&apiKey=" + key + '&sources=bleacher-report' + '&searchIn=title'
+            if len(q) < 400:
+                q += ' OR "' + player.firstname + "-" + player.lastname + '"'
+        q = q.replace(" ", "%20")
+        endpoint = (
+            "/v2/everything?sortBy=publishedAt&language=en&q="
+            + q
+            + "&apiKey="
+            + key
+            + "&sources=bleacher-report"
+            + "&searchIn=title"
+        )
     else:
-        endpoint = "/v2/everything?sortBy=publishedAt&language=en&q=" + \
-            "nba" + "&apiKey=" + key + '&sources=bleacher-report'
+        endpoint = (
+            "/v2/everything?sortBy=publishedAt&language=en&q="
+            + "nba"
+            + "&apiKey="
+            + key
+            + "&sources=bleacher-report"
+        )
 
     api_article_results = call_news_api(endpoint)
     sorted_articles = create_sorted_article_list(api_article_results)
@@ -539,8 +585,9 @@ def get_articles_from_api(team=None):
 def get_articles(team=None):
     one_day_ago = timezone.now() - timedelta(days=1)
     if team:
-        cached_articles = TeamArticle.objects.filter(
-            team=team).order_by('-retrieval_date')
+        cached_articles = TeamArticle.objects.filter(team=team).order_by(
+            "-retrieval_date"
+        )
     else:
         cached_articles = NBAArticle.objects.filter().order_by("-retrieval_date")
 
@@ -560,11 +607,11 @@ def get_articles(team=None):
 
 # Solution to remove HTML tags from descriptions of NBA articles:
 # https://stackoverflow.com/questions/9662346/python-code-to-remove-html-tags-from-a-string
-CLEANR = re.compile('<.*?>')
+CLEANR = re.compile("<.*?>")
 
 
 def clean_html(raw_html):
-    cleanText = re.sub(CLEANR, '', raw_html)
+    cleanText = re.sub(CLEANR, "", raw_html)
     return cleanText
 
 
@@ -574,10 +621,10 @@ def call_news_api(endpoint):
     res = conn.getresponse()
     data = res.read()
     json_dict = json.loads(data)
-    results = json_dict['totalResults']
+    results = json_dict["totalResults"]
     if results == 0:
         return None
-    return json_dict['articles']
+    return json_dict["articles"]
 
 
 # Takes articles from api response as argument and returns list of articles sorted by date
@@ -604,16 +651,18 @@ def create_sorted_article_list(unsorted_articles):
         year = int(publishedDate[0:4])
         dateObj = datetime(year, month, day, hour, minute, second)
 
-        final_articles.append({
-            "date": dateObj,
-            "title": title,
-            "author": author,
-            "description": description,
-            "thumbnail": thumbnail,
-            "url": url
-        })
+        final_articles.append(
+            {
+                "date": dateObj,
+                "title": title,
+                "author": author,
+                "description": description,
+                "thumbnail": thumbnail,
+                "url": url,
+            }
+        )
 
-    final_articles.sort(key=lambda x: x['date'])
+    final_articles.sort(key=lambda x: x["date"])
     return final_articles
 
 
@@ -638,7 +687,7 @@ def create_and_get_article_short_list(article_item_list, team=None):
                 author=author,
                 thumbnail=thumbnail,
                 description=description,
-                url=url
+                url=url,
             )
             article_obj = TeamArticle.objects.get(title=title)
             article_obj_list.append(article_obj)
@@ -648,17 +697,17 @@ def create_and_get_article_short_list(article_item_list, team=None):
                 author=author,
                 thumbnail=thumbnail,
                 description=description,
-                url=url
+                url=url,
             )
             article_obj = NBAArticle.objects.get(title=title)
             article_obj_list.append(article_obj)
     return reversed(article_obj_list)
 
 
-@login_required(login_url='/login')
+@login_required(login_url="/login")
 def toggle_team_like(request):
-    liked = request.GET.get('liked') == 'true'
-    teamID = request.GET.get('teamID', False)
+    liked = request.GET.get("liked") == "true"
+    teamID = request.GET.get("teamID", False)
     team = Team.objects.get(teamID=teamID)
     try:
         if liked:
@@ -676,16 +725,16 @@ def toggle_team_like(request):
 def update_live_games(request):
     live_games = get_live_games()
     for game in live_games:
-        game['home_team'] = model_to_dict(
-            game['home_team'], exclude=['logo', 'liked_by'])
-        game['away_team'] = model_to_dict(
-            game['away_team'], exclude=['logo', 'liked_by'])
+        game["home_team"] = model_to_dict(
+            game["home_team"], exclude=["logo", "liked_by"]
+        )
+        game["away_team"] = model_to_dict(
+            game["away_team"], exclude=["logo", "liked_by"]
+        )
     print("LIVE GAMES FROM AJAX CALL:", live_games)
     return JsonResponse({"success": True, "live_games": live_games})
 
 
 def room(request, room_name):
-    page_data = {
-        "room_name": room_name
-    }
-    return render(request, 'nba/chat_room.html', page_data)
+    page_data = {"room_name": room_name}
+    return render(request, "nba/chat_room.html", page_data)

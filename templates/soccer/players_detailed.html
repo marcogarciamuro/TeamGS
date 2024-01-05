@@ -1,22 +1,22 @@
 {% load extras %}
-<div class="container players-table">
+<div class="container">
     <!-- Left Column -->
     <div class="row">
-        <div class="col-8">
+        <div class="col-4">
             <div class="row pb-1">
-                <div class="col-3">
-                    <b>PLAYER</b>
+                <div class="col-3 offset-3">
+                    <b>NAME</b>
                 </div>
             </div>
             {% for player in players %}
                 <div class="row row-striped align-items-center pb-1 pt-1">
-                    <div class="col-auto">
+                    <div class="col-3">
                         <img src="{{ player.photo }}"
                              alt="player photo"
                              width="40px"
                              height="40px"/>
                     </div>
-                    <div class="col player-table-text">
+                    <div class="col-9 player-table-text">
                         <div>
                             {{ player.name }}
                             {% if player.jersey_number %}<span class="ps-1 player-number-text">{{ player.jersey_number }}</span>{% endif %}
@@ -26,32 +26,56 @@
             {% endfor %}
         </div>
         <!-- Right Column -->
-        <div class="col-4  horizontal-scroll">
+        <div class="col-8 horizontal-scroll">
             <div class="row pb-1">
-                <div class="col-6">
+                <div class="col-2 offset-1">
                     <b>POS</b>
                 </div>
-                <div class="col-6">
+                <div class="col-2">
                     <b>AGE</b>
+                </div>
+                <div class="col-2">
+                    <b>HT</b>
+                </div>
+                <div class="col-2">
+                    <b>WT</b>
+                </div>
+                <div class="col-2">
+                    <b>NAT</b>
                 </div>
             </div>
             {% for player in players %}
                 <div class="row row-striped align-items-center pb-1 pt-1 player-table-text"
                      style="height:48px;">
-                    <div class="col-6">
+                    <div class="col-2 offset-1">
                         {% if player.position is None %}
                             --
                         {% else %}
                             {{ player.position }}
                         {% endif %}
                     </div>
-                    <div class="col-6">
+                    <div class="col-2">
                         {% if player.age is None %}
                             --
                         {% else %}
                             {{ player.age }}
                         {% endif %}
                     </div>
+                    <div class="col-2">
+                        {% if player.height_feet is None %}
+                            --
+                        {% else %}
+                            {{ player.height_feet }}' {{ player.height_inches }}"
+                        {% endif %}
+                    </div>
+                    <div class="col-2">
+                        {% if player.weight is None %}
+                            --
+                        {% else %}
+                            {{ player.weight }} lbs
+                        {% endif %}
+                    </div>
+                    <div class="col-2">{{ player.nationality }}</div>
                 </div>
             {% endfor %}
         </div>
